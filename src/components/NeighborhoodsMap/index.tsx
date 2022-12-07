@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LatLngTuple } from 'leaflet';
 import { MapContainer, TileLayer, Popup, Polygon } from 'react-leaflet';
 
@@ -17,32 +17,128 @@ interface Local {
 }
 
 interface Properties {
-  NOME: string;
-  CODBNUM: number;
+  nome: string;
+  codbairro: string;
+  regiao_adm: string;
+  codra: number;
+  rp: string;
+  cod_rp: string;
 }
 
 interface Geometry {
   coordinates: LatLngTuple[];
 }
 
-interface CaptionData {
-  color: string;
-  name: string;
+interface NeighborhoodsData extends Properties {
+  value: number;
 }
 
 interface NeighborhoodsMapProps {
   name: string;
-  captionItems: CaptionData[];
+  captionItems?: string[];
+  captionColors: string[];
+  data: NeighborhoodsData[];
+  regionType: 'rp' | 'ra' | 'neighborhood'
 }
 
-export default function NeighborhoodsMap({ name, captionItems }: NeighborhoodsMapProps) {
+export default function NeighborhoodsMap({ name, captionItems, captionColors, data, regionType }: NeighborhoodsMapProps) {
   const center: LatLngTuple = [-22.933240, -43.449380];
 
   const [neighborhoods, setNeighborhoods] = useState<GeoJSON | null>(null);
   const [showCaption, setShowCaption] = useState(true);
 
+  const captionDivision = useMemo(() => {
+    type Accumulator = {
+      min: number;
+      max: number;
+    };
+
+    const { min, max } = data.reduce((accumulator: Accumulator | null, currentValue) => {
+      const { value } = currentValue;
+      
+      if(accumulator != null) {
+        const { min, max } = accumulator;
+
+        return { min: value < min ? value : min, max: value > max ? value : max };
+      } else
+        return { min: value, max: value };
+    }, null) as Accumulator;
+
+    return { min, max, step: (max - min) / captionColors.length };
+  }, [data, captionColors]);
+
+  const captionRanges = useMemo(() => getCaptionRanges(), [captionColors, captionDivision]);
+
+  function getColorIndex(value: number) {
+    for(let i = 0; i < captionColors.length; i++) {
+      const { min, max } = captionRanges[i];
+
+      if(value >= min && value <= max)
+        return i;
+    }
+
+    return 0;
+  }
+
+  function getNeighborhoodValue(properties: Properties) {
+    let neighborhood;
+
+    switch (regionType) {
+      case 'rp':
+        neighborhood = data.find(neighborhood => neighborhood.rp == properties.rp);
+        break;
+      case 'ra':
+        neighborhood = data.find(neighborhood => neighborhood.regiao_adm == properties.regiao_adm);
+        break;
+    
+      default:
+        neighborhood = data.find(neighborhood => neighborhood.nome == properties.nome);
+        break;
+    }
+
+    return neighborhood ? neighborhood.value : captionDivision.min;
+  }
+
+  function getCaptionRanges() {
+    const ranges = [];
+
+    const captionLength = captionColors.length;
+    const { min, step } = captionDivision;
+
+    for(let i = 0; i < captionColors.length; i++) {
+      ranges.push({ 
+        min: Math.round(
+          i == captionLength - 1 ? min
+            : Math.round(min + (captionLength - i - 1) * (step)) + 1
+        ),
+        max: Math.round(min + (captionLength - i) * (step))
+      });
+    }
+
+    return ranges;
+  }
+
   useEffect(() => {
     setNeighborhoods(neighborhoodsData as unknown as GeoJSON);
+
+    const RP: number[] = [];
+    const RPV = [];
+
+    if(neighborhoodsData != null) {
+      for(const neighborhood of (neighborhoodsData as unknown as GeoJSON).features) {
+        if(!RP.some(codbairro => codbairro == parseInt(neighborhood.properties.codbairro)))
+          RP.push(parseInt(neighborhood.properties.codbairro));
+      }
+
+      for(const codbairro of RP) {
+        RPV.push({
+          codbairro,
+          value: Math.floor(Math.random() * 1000) + 1
+        });
+      }
+    }
+
+    console.log(RPV);
   }, []);
 
   return (
@@ -54,10 +150,11 @@ export default function NeighborhoodsMap({ name, captionItems }: NeighborhoodsMa
         />
 
         {neighborhoods && neighborhoods.features.map(({ geometry, properties }) => (
-          <Polygon pathOptions={{fillColor: captionItems[Math.floor(Math.random() * 5)].color, fillOpacity: 0.55, color: '#272727', weight: 0.5}} 
-            key={properties.CODBNUM} positions={geometry.coordinates}
+          <Polygon pathOptions={{fillColor: captionColors[getColorIndex(getNeighborhoodValue(properties))], 
+            fillOpacity: 0.55, color: '#272727', weight: 0.5}} 
+            key={properties.codbairro} positions={geometry.coordinates}
           >
-            <Popup>{properties.NOME}</Popup>
+            <Popup>{`${properties.nome}`} <br/> {`${getNeighborhoodValue(properties)}`}</Popup>
           </Polygon>
         ))}
       </MapContainer>
@@ -71,10 +168,10 @@ export default function NeighborhoodsMap({ name, captionItems }: NeighborhoodsMa
             <strong>{name}</strong>
           </CaptionTitle>
           <CaptionList>
-            {captionItems.map(({ color, name }) => (
-              <CaptionItem key={color}>
-                <CaptionColor css={{ backgroundColor: color }}  />
-                {name}
+            {captionColors.map((color, index) => (
+              <CaptionItem key={index}>
+                <CaptionColor css={{ backgroundColor: color }} />
+                {captionItems == null ? `${captionRanges[index].min} a ${captionRanges[index].max}` : captionItems[index]}
               </CaptionItem>
             ))}
           </CaptionList>

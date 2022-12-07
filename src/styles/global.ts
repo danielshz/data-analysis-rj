@@ -72,4 +72,7 @@ export default globalCss({
     height: '100%',
     zIndex: '1'
   },
+  '.leaflet-popup-content-wrapper': {
+    textAlign: 'center'
+  }
 });
