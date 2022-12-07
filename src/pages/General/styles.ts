@@ -13,7 +13,7 @@ export const Content = styled('main', {
   gap: '2rem',
 
   '@media (min-width: 560px)': {
-    margin: '4rem 4rem 0',
+    margin: '4rem 6rem 0',
   },
 
   '@media (min-width: 1120px)': {
@@ -36,5 +36,13 @@ export const Maps = styled('section', {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
     gap: '3rem',
-  }
+  },
+});
+
+export const ContainerMap = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '1rem',
+  width: '100%',
 });

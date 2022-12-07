@@ -53,7 +53,8 @@ export const Captions = styled('div', {
   flexDirection: 'column',
 
   padding: '1rem 1.2rem',
-  borderRadius: '10px'
+  borderRadius: '10px',
+  boxShadow: '0 2px 10px hsl(0 0% 9.0%)',
 });
 
 // export const CaptionTitle = styled.div`

@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { LatLngTuple } from 'leaflet';
 import { MapContainer, TileLayer, Popup, Polygon } from 'react-leaflet';
 
-import neighborhoodsData from '../../utils/neighborhoods.json';
+import neighborhoodsData from '../../utils/Limite_de_Bairros.json';
+import rasData from '../../utils/Regioes_Administrativas.json';
+import rpsData from '../../utils/Regioes_de_Planejamento.json';
 
 import { Container, Captions, CaptionTitle, CaptionList, CaptionItem, CaptionColor, HideButton, ShowButton } from './styles';
 import { FiX, FiHelpCircle } from 'react-icons/fi';
@@ -18,33 +20,45 @@ interface Local {
 
 interface Properties {
   nome: string;
-  codbairro: string;
-  regiao_adm: string;
-  codra: number;
-  rp: string;
-  cod_rp: string;
+  codbairro?: string;
+  regiao_adm?: string;
+  codra?: number;
+  rp?: string;
+  cod_rp?: string;
 }
 
 interface Geometry {
   coordinates: LatLngTuple[];
 }
 
-interface NeighborhoodsData extends Properties {
+interface RegionsData extends Properties {
   value: number;
 }
 
-interface NeighborhoodsMapProps {
+interface RegionsMapProps {
   name: string;
   captionItems?: string[];
   captionColors: string[];
-  data: NeighborhoodsData[];
-  regionType: 'rp' | 'ra' | 'neighborhood'
+  data: RegionsData[];
+  regionType: 'rp' | 'ra' | 'neighborhood';
 }
 
-export default function NeighborhoodsMap({ name, captionItems, captionColors, data, regionType }: NeighborhoodsMapProps) {
+export type MapType = 'ra' | 'rp' | 'neighborhood';
+
+export const regionOptions = [
+  {value: 'ra', label: 'Região Administrativa'}, 
+  {value: 'neighborhood', label: 'Bairro'}, 
+  {value: 'rp', label: 'Região de Planejamento'}
+];
+
+export default function RegionsMap({ name, captionItems, captionColors, data, regionType }: RegionsMapProps) {
+  const neighborhoods = neighborhoodsData;
+  const ras = rasData;
+  const rps = rpsData;
+
   const center: LatLngTuple = [-22.933240, -43.449380];
 
-  const [neighborhoods, setNeighborhoods] = useState<GeoJSON | null>(null);
+  const [regions, setRegions] = useState<GeoJSON | null>(null);
   const [showCaption, setShowCaption] = useState(true);
 
   const captionDivision = useMemo(() => {
@@ -80,23 +94,24 @@ export default function NeighborhoodsMap({ name, captionItems, captionColors, da
     return 0;
   }
 
-  function getNeighborhoodValue(properties: Properties) {
-    let neighborhood;
-
+  function getRegionValue(properties: Properties) {
+    let region;
+    
     switch (regionType) {
       case 'rp':
-        neighborhood = data.find(neighborhood => neighborhood.rp == properties.rp);
+        region = data.find(region => region.nome == properties.nome);
         break;
+
       case 'ra':
-        neighborhood = data.find(neighborhood => neighborhood.regiao_adm == properties.regiao_adm);
+        region = data.find(region => region.nome.trim() == properties.nome);
         break;
     
       default:
-        neighborhood = data.find(neighborhood => neighborhood.nome == properties.nome);
+        region = data.find(region => region.nome == properties.nome);
         break;
     }
 
-    return neighborhood ? neighborhood.value : captionDivision.min;
+    return region ? region.value : captionDivision.min;
   }
 
   function getCaptionRanges() {
@@ -119,27 +134,37 @@ export default function NeighborhoodsMap({ name, captionItems, captionColors, da
   }
 
   useEffect(() => {
-    setNeighborhoods(neighborhoodsData as unknown as GeoJSON);
-
-    const RP: number[] = [];
-    const RPV = [];
-
-    if(neighborhoodsData != null) {
-      for(const neighborhood of (neighborhoodsData as unknown as GeoJSON).features) {
-        if(!RP.some(codbairro => codbairro == parseInt(neighborhood.properties.codbairro)))
-          RP.push(parseInt(neighborhood.properties.codbairro));
-      }
-
-      for(const codbairro of RP) {
-        RPV.push({
-          codbairro,
-          value: Math.floor(Math.random() * 1000) + 1
-        });
-      }
+    switch (regionType) {
+      case 'ra':
+        setRegions(ras as unknown as GeoJSON);
+        break;
+      case 'rp':
+        setRegions(rps as unknown as GeoJSON);
+        break;
+      case 'neighborhood':
+        setRegions(neighborhoods as unknown as GeoJSON);
+        break;
     }
 
-    console.log(RPV);
-  }, []);
+    // const RP: (string | null)[] = [];
+    // const RPV = [];
+
+    // if(neighborhoodsData != null) {
+    //   for(const neighborhood of (neighborhoodsData as unknown as GeoJSON).features) {
+    //     if(!RP.some(regiao_adm => regiao_adm == neighborhood.properties.regiao_adm))
+    //       RP.push(neighborhood.properties?.regiao_adm);
+    //   }
+
+    //   for(const regiao_adm of RP) {
+    //     RPV.push({
+    //       regiao_adm,
+    //       value: Math.floor(Math.random() * 1000) + 1
+    //     });
+    //   }
+    // }
+
+    // console.warn(RPV);
+  }, [regionType]);
 
   return (
     <Container style={{ height: '4.4rem' }}>
@@ -149,12 +174,12 @@ export default function NeighborhoodsMap({ name, captionItems, captionColors, da
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {neighborhoods && neighborhoods.features.map(({ geometry, properties }) => (
-          <Polygon pathOptions={{fillColor: captionColors[getColorIndex(getNeighborhoodValue(properties))], 
+        {regions && regions.features.map(({ geometry, properties }, index) => (
+          <Polygon pathOptions={{fillColor: captionColors[getColorIndex(getRegionValue(properties))], 
             fillOpacity: 0.55, color: '#272727', weight: 0.5}} 
-            key={properties.codbairro} positions={geometry.coordinates}
+            key={index} positions={geometry.coordinates}
           >
-            <Popup>{`${properties.nome}`} <br/> {`${getNeighborhoodValue(properties)}`}</Popup>
+            <Popup>{`${properties.nome}`} <br/> {`${getRegionValue(properties)}`}</Popup>
           </Polygon>
         ))}
       </MapContainer>

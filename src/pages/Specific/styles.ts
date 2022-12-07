@@ -41,6 +41,14 @@ export const Map = styled('section', {
   width: '100%',
 });
 
+export const ContainerMap = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '1rem',
+  width: '100%',
+});
+
 export const Cards = styled('section', {
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',

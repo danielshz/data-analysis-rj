@@ -1,1561 +1,1702 @@
-import NeighborhoodsMap from '../../components/NeighborhoodsMap';
+import RegionsMap, { MapType, regionOptions } from '../../components/RegionsMap';
 import NavBar from '../../components/NavBar';
 
 import { FiArrowUpCircle, FiArrowDownCircle, FiBarChart2, FiPlusCircle } from 'react-icons/fi';
 
-import { Container, Content, Map, Cards, Card } from './styles';
+import { Container, Content, Map, ContainerMap, Cards, Card } from './styles';
+import { useMemo, useState } from 'react';
+import ToggleGroup from '../../components/ToggleGroup';
 
-export default function Specific() {
-  const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536','#D9D336'];
-  const captionItems = ['Extrema Pobreza', 'Pobreza', 'Baixa Renda', 'Acima de 1/2 S.M.', 'Acima de 1 S.M.']
-
-  const data = [
+const dataRA2 = [
     {
-        "nome": "Paquetá                   ",
-        "codbairro": "013",
-        "regiao_adm": "PAQUETA                 ",
-        "codra": 21,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 40
-    },
-    {
-        "nome": "Freguesia (Ilha)          ",
-        "codbairro": "098",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 400
-    },
-    {
-        "nome": "Bancários                 ",
-        "codbairro": "097",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 326
-    },
-    {
-        "nome": "Galeão                    ",
-        "codbairro": "104",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 679
-    },
-    {
-        "nome": "Tauá                      ",
-        "codbairro": "101",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 520
-    },
-    {
-        "nome": "Portuguesa                ",
-        "codbairro": "103",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 598
-    },
-    {
-        "nome": "Moneró                    ",
-        "codbairro": "102",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 600
-    },
-    {
-        "nome": "Vigário Geral             ",
-        "codbairro": "048",
-        "regiao_adm": "VIGARIO GERAL           ",
-        "codra": 31,
-        "rp": "Penha",
-        "cod_rp": "3.5",
-        "value": 352
-    },
-    {
-        "nome": "Cocotá                    ",
-        "codbairro": "096",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 524
-    },
-    {
-        "nome": "Jardim América            ",
-        "codbairro": "049",
-        "regiao_adm": "VIGARIO GERAL           ",
-        "codra": 31,
-        "rp": "Penha",
-        "cod_rp": "3.5",
-        "value": 995
-    },
-    {
-        "nome": "Jardim Carioca            ",
-        "codbairro": "100",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 88
-    },
-    {
-        "nome": "Pavuna                    ",
-        "codbairro": "114",
-        "regiao_adm": "PAVUNA                  ",
-        "codra": 25,
-        "rp": "Pavuna",
-        "cod_rp": "3.6",
-        "value": 273
-    },
-    {
-        "nome": "Cordovil                  ",
-        "codbairro": "046",
-        "regiao_adm": "VIGARIO GERAL           ",
-        "codra": 31,
-        "rp": "Penha",
-        "cod_rp": "3.5",
-        "value": 603
-    },
-    {
-        "nome": "Jardim Guanabara          ",
-        "codbairro": "099",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 544
-    },
-    {
-        "nome": "Parada de Lucas           ",
-        "codbairro": "047",
-        "regiao_adm": "VIGARIO GERAL           ",
-        "codra": 31,
-        "rp": "Penha",
-        "cod_rp": "3.5",
-        "value": 974
-    },
-    {
-        "nome": "Parque Colúmbia           ",
-        "codbairro": "159",
-        "regiao_adm": "PAVUNA                  ",
-        "codra": 25,
-        "rp": "Pavuna",
-        "cod_rp": "3.6",
-        "value": 124
-    },
-    {
-        "nome": "Praia da Bandeira         ",
-        "codbairro": "095",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 777
-    },
-    {
-        "nome": "Penha Circular            ",
-        "codbairro": "044",
-        "regiao_adm": "PENHA                   ",
-        "codra": 11,
-        "rp": "Penha",
-        "cod_rp": "3.5",
-        "value": 479
-    },
-    {
-        "nome": "Cacuia                    ",
-        "codbairro": "093",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 331
-    },
-    {
-        "nome": "Irajá                     ",
-        "codbairro": "076",
-        "regiao_adm": "IRAJA                   ",
-        "codra": 14,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 613
-    },
-    {
-        "nome": "Anchieta                  ",
-        "codbairro": "107",
-        "regiao_adm": "ANCHIETA                ",
-        "codra": 22,
-        "rp": "Pavuna",
-        "cod_rp": "3.6",
-        "value": 74
-    },
-    {
-        "nome": "Acari                     ",
-        "codbairro": "111",
-        "regiao_adm": "PAVUNA                  ",
-        "codra": 25,
-        "rp": "Pavuna",
-        "cod_rp": "3.6",
-        "value": 803
-    },
-    {
-        "nome": "Pitangueiras              ",
-        "codbairro": "094",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 267
-    },
-    {
-        "nome": "Costa Barros              ",
-        "codbairro": "113",
-        "regiao_adm": "PAVUNA                  ",
-        "codra": 25,
-        "rp": "Pavuna",
-        "cod_rp": "3.6",
-        "value": 672
-    },
-    {
-        "nome": "Brás de Pina              ",
-        "codbairro": "045",
-        "regiao_adm": "PENHA                   ",
-        "codra": 11,
-        "rp": "Penha",
-        "cod_rp": "3.5",
-        "value": 284
-    },
-    {
-        "nome": "Penha                     ",
-        "codbairro": "043",
-        "regiao_adm": "PENHA                   ",
-        "codra": 11,
-        "rp": "Penha",
-        "cod_rp": "3.5",
-        "value": 68
-    },
-    {
-        "nome": "Zumbi                     ",
-        "codbairro": "092",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 326
-    },
-    {
-        "nome": "Ribeira                   ",
-        "codbairro": "091",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 512
-    },
-    {
-        "nome": "Coelho Neto               ",
-        "codbairro": "110",
-        "regiao_adm": "PAVUNA                  ",
-        "codra": 25,
-        "rp": "Pavuna",
-        "cod_rp": "3.6",
-        "value": 192
-    },
-    {
-        "nome": "Guadalupe                 ",
-        "codbairro": "106",
-        "regiao_adm": "ANCHIETA                ",
-        "codra": 22,
-        "rp": "Pavuna",
-        "cod_rp": "3.6",
-        "value": 143
-    },
-    {
-        "nome": "Parque Anchieta           ",
-        "codbairro": "108",
-        "regiao_adm": "ANCHIETA                ",
-        "codra": 22,
-        "rp": "Pavuna",
-        "cod_rp": "3.6",
-        "value": 770
-    },
-    {
-        "nome": "Barros Filho              ",
-        "codbairro": "112",
-        "regiao_adm": "PAVUNA                  ",
-        "codra": 25,
-        "rp": "Pavuna",
-        "cod_rp": "3.6",
-        "value": 959
-    },
-    {
-        "nome": "Vista Alegre              ",
-        "codbairro": "075",
-        "regiao_adm": "IRAJA                   ",
-        "codra": 14,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 785
-    },
-    {
-        "nome": "Ricardo de Albuquerque    ",
-        "codbairro": "109",
-        "regiao_adm": "ANCHIETA                ",
-        "codra": 22,
-        "rp": "Pavuna",
-        "cod_rp": "3.6",
-        "value": 162
-    },
-    {
-        "nome": "Colégio                   ",
-        "codbairro": "077",
-        "regiao_adm": "IRAJA                   ",
-        "codra": 14,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 767
-    },
-    {
-        "nome": "Honório Gurgel            ",
-        "codbairro": "087",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 731
-    },
-    {
-        "nome": "Olaria                    ",
-        "codbairro": "042",
-        "regiao_adm": "RAMOS                   ",
-        "codra": 10,
-        "rp": "Ramos",
-        "cod_rp": "3.1",
-        "value": 80
-    },
-    {
-        "nome": "Vila da Penha             ",
-        "codbairro": "074",
-        "regiao_adm": "IRAJA                   ",
-        "codra": 14,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 245
-    },
-    {
-        "nome": "Maré                      ",
-        "codbairro": "157",
-        "regiao_adm": "COMPLEXO DA MARE        ",
-        "codra": 30,
-        "rp": "Ramos",
-        "cod_rp": "3.1",
-        "value": 92
-    },
-    {
-        "nome": "Vila Militar              ",
-        "codbairro": "135",
-        "regiao_adm": "REALENGO                ",
-        "codra": 33,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 836
-    },
-    {
-        "nome": "Cidade Universitária      ",
-        "codbairro": "105",
-        "regiao_adm": "ILHA DO GOVERNADOR      ",
-        "codra": 20,
-        "rp": "Ilha do Governador",
-        "cod_rp": "3.7",
-        "value": 938
-    },
-    {
-        "nome": "Rocha Miranda             ",
-        "codbairro": "086",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 997
-    },
-    {
-        "nome": "Ramos                     ",
-        "codbairro": "041",
-        "regiao_adm": "RAMOS                   ",
-        "codra": 10,
-        "rp": "Ramos",
-        "cod_rp": "3.1",
-        "value": 589
-    },
-    {
-        "nome": "Realengo                  ",
-        "codbairro": "139",
-        "regiao_adm": "REALENGO                ",
-        "codra": 33,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 605
-    },
-    {
-        "nome": "Vila Kosmos               ",
-        "codbairro": "072",
-        "regiao_adm": "IRAJA                   ",
-        "codra": 14,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 796
-    },
-    {
-        "nome": "Marechal Hermes           ",
-        "codbairro": "090",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 193
-    },
-    {
-        "nome": "Vicente de Carvalho       ",
-        "codbairro": "073",
-        "regiao_adm": "IRAJA                   ",
-        "codra": 14,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 996
-    },
-    {
-        "nome": "Paciência                 ",
-        "codbairro": "148",
-        "regiao_adm": "SANTA CRUZ              ",
-        "codra": 19,
-        "rp": "Santa Cruz",
-        "cod_rp": "5.3",
-        "value": 923
-    },
-    {
-        "nome": "Engenho da Rainha         ",
-        "codbairro": "055",
-        "regiao_adm": "INHAUMA                 ",
-        "codra": 12,
-        "rp": "Inhaúma",
-        "cod_rp": "3.4",
-        "value": 533
-    },
-    {
-        "nome": "Complexo do Alemão        ",
-        "codbairro": "156",
-        "regiao_adm": "COMPLEXO DO ALEMÃO      ",
-        "codra": 29,
-        "rp": "Inhaúma",
-        "cod_rp": "3.4",
-        "value": 166
-    },
-    {
-        "nome": "Vaz Lobo                  ",
-        "codbairro": "084",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 734
-    },
-    {
-        "nome": "Padre Miguel              ",
-        "codbairro": "140",
-        "regiao_adm": "BANGU                   ",
-        "codra": 17,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 1
-    },
-    {
-        "nome": "Bento Ribeiro             ",
-        "codbairro": "089",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 106
-    },
-    {
-        "nome": "Turiaçú                   ",
-        "codbairro": "085",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 420
-    },
-    {
-        "nome": "Bonsucesso                ",
-        "codbairro": "040",
-        "regiao_adm": "RAMOS                   ",
-        "codra": 10,
-        "rp": "Ramos",
-        "cod_rp": "3.1",
-        "value": 390
-    },
-    {
-        "nome": "Inhaúma                   ",
-        "codbairro": "054",
-        "regiao_adm": "INHAUMA                 ",
-        "codra": 12,
-        "rp": "Inhaúma",
-        "cod_rp": "3.4",
-        "value": 709
-    },
-    {
-        "nome": "Tomás Coelho              ",
-        "codbairro": "056",
-        "regiao_adm": "INHAUMA                 ",
-        "codra": 12,
-        "rp": "Inhaúma",
-        "cod_rp": "3.4",
-        "value": 828
-    },
-    {
-        "nome": "Santíssimo                ",
-        "codbairro": "143",
-        "regiao_adm": "CAMPO GRANDE            ",
-        "codra": 18,
-        "rp": "Campo Grande",
-        "cod_rp": "5.2",
-        "value": 192
-    },
-    {
-        "nome": "Madureira                 ",
-        "codbairro": "083",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 252
-    },
-    {
-        "nome": "Osvaldo Cruz              ",
-        "codbairro": "088",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 453
-    },
-    {
-        "nome": "Santa Cruz                ",
-        "codbairro": "149",
-        "regiao_adm": "SANTA CRUZ              ",
-        "codra": 19,
-        "rp": "Santa Cruz",
-        "cod_rp": "5.3",
-        "value": 728
-    },
-    {
-        "nome": "Magalhães Bastos          ",
-        "codbairro": "138",
-        "regiao_adm": "REALENGO                ",
-        "codra": 33,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 126
-    },
-    {
-        "nome": "Senador Camará            ",
-        "codbairro": "142",
-        "regiao_adm": "BANGU                   ",
-        "codra": 17,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 267
-    },
-    {
-        "nome": "Cavalcanti                ",
-        "codbairro": "080",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 867
-    },
-    {
-        "nome": "Campo dos Afonsos         ",
-        "codbairro": "136",
-        "regiao_adm": "REALENGO                ",
-        "codra": 33,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 687
-    },
-    {
-        "nome": "Higienópolis              ",
-        "codbairro": "050",
-        "regiao_adm": "INHAUMA                 ",
-        "codra": 12,
-        "rp": "Inhaúma",
-        "cod_rp": "3.4",
-        "value": 432
-    },
-    {
-        "nome": "Manguinhos                ",
-        "codbairro": "039",
-        "regiao_adm": "RAMOS                   ",
-        "codra": 10,
-        "rp": "Ramos",
-        "cod_rp": "3.1",
-        "value": 544
-    },
-    {
-        "nome": "Engenheiro Leal           ",
-        "codbairro": "081",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 704
-    },
-    {
-        "nome": "Pilares                   ",
-        "codbairro": "071",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 195
-    },
-    {
-        "nome": "Del Castilho              ",
-        "codbairro": "053",
-        "regiao_adm": "INHAUMA                 ",
-        "codra": 12,
-        "rp": "Inhaúma",
-        "cod_rp": "3.4",
-        "value": 609
-    },
-    {
-        "nome": "Piedade                   ",
-        "codbairro": "069",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 289
-    },
-    {
-        "nome": "Cascadura                 ",
-        "codbairro": "082",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 278
-    },
-    {
-        "nome": "Vila Valqueire            ",
-        "codbairro": "125",
-        "regiao_adm": "JACAREPAGUA             ",
-        "codra": 16,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 494
-    },
-    {
-        "nome": "Maria da Graça            ",
-        "codbairro": "052",
-        "regiao_adm": "INHAUMA                 ",
-        "codra": 12,
-        "rp": "Inhaúma",
-        "cod_rp": "3.4",
-        "value": 373
-    },
-    {
-        "nome": "Quintino Bocaiúva         ",
-        "codbairro": "079",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 907
-    },
-    {
-        "nome": "Jardim Sulacap            ",
-        "codbairro": "137",
-        "regiao_adm": "REALENGO                ",
-        "codra": 33,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 363
-    },
-    {
-        "nome": "Campinho                  ",
-        "codbairro": "078",
-        "regiao_adm": "MADUREIRA               ",
-        "codra": 15,
-        "rp": "Madureira",
-        "cod_rp": "3.3",
-        "value": 8
-    },
-    {
-        "nome": "Abolição                  ",
-        "codbairro": "070",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 349
-    },
-    {
-        "nome": "Senador Vasconcelos       ",
-        "codbairro": "145",
-        "regiao_adm": "CAMPO GRANDE            ",
-        "codra": 18,
-        "rp": "Campo Grande",
-        "cod_rp": "5.2",
-        "value": 280
-    },
-    {
-        "nome": "Cosmos                    ",
-        "codbairro": "147",
-        "regiao_adm": "CAMPO GRANDE            ",
-        "codra": 18,
-        "rp": "Campo Grande",
-        "cod_rp": "5.2",
-        "value": 569
-    },
-    {
-        "nome": "Jacarezinho               ",
-        "codbairro": "155",
-        "regiao_adm": "JACAREZINHO             ",
-        "codra": 28,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 56
-    },
-    {
-        "nome": "Cachambi                  ",
-        "codbairro": "065",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 788
-    },
-    {
-        "nome": "Praça Seca                ",
-        "codbairro": "124",
-        "regiao_adm": "JACAREPAGUA             ",
-        "codra": 16,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 192
-    },
-    {
-        "nome": "Benfica                   ",
-        "codbairro": "012",
-        "regiao_adm": "SAO CRISTOVAO           ",
-        "codra": 7,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 45
-    },
-    {
-        "nome": "Engenho de Dentro         ",
-        "codbairro": "066",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 156
-    },
-    {
-        "nome": "São Cristóvão             ",
-        "codbairro": "010",
-        "regiao_adm": "SAO CRISTOVAO           ",
-        "codra": 7,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 728
-    },
-    {
-        "nome": "Vasco da Gama             ",
-        "codbairro": "158",
-        "regiao_adm": "SAO CRISTOVAO           ",
-        "codra": 7,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 708
-    },
-    {
-        "nome": "Inhoaíba                  ",
-        "codbairro": "146",
-        "regiao_adm": "CAMPO GRANDE            ",
-        "codra": 18,
-        "rp": "Campo Grande",
-        "cod_rp": "5.2",
-        "value": 266
-    },
-    {
-        "nome": "Todos os Santos           ",
-        "codbairro": "064",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 904
-    },
-    {
-        "nome": "Jacaré                    ",
-        "codbairro": "051",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 59
-    },
-    {
-        "nome": "Encantado                 ",
-        "codbairro": "068",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 994
-    },
-    {
-        "nome": "Rocha                     ",
-        "codbairro": "058",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 289
-    },
-    {
-        "nome": "Méier                     ",
-        "codbairro": "063",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 286
-    },
-    {
-        "nome": "Gamboa                    ",
-        "codbairro": "002",
-        "regiao_adm": "PORTUARIA               ",
-        "codra": 1,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 156
-    },
-    {
-        "nome": "Santo Cristo              ",
-        "codbairro": "003",
-        "regiao_adm": "PORTUARIA               ",
-        "codra": 1,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 881
-    },
-    {
-        "nome": "Centro                    ",
-        "codbairro": "005",
-        "regiao_adm": "CENTRO                  ",
-        "codra": 2,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 945
-    },
-    {
-        "nome": "Sampaio                   ",
-        "codbairro": "060",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 818
-    },
-    {
-        "nome": "Riachuelo                 ",
-        "codbairro": "059",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 746
-    },
-    {
-        "nome": "Saúde                     ",
-        "codbairro": "001",
-        "regiao_adm": "PORTUARIA               ",
-        "codra": 1,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 994
-    },
-    {
-        "nome": "São Francisco Xavier      ",
-        "codbairro": "057",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 162
-    },
-    {
-        "nome": "Engenho Novo              ",
-        "codbairro": "061",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
+        "nome": "PAQUETA                 ",
         "value": 725
     },
     {
-        "nome": "Mangueira                 ",
-        "codbairro": "011",
-        "regiao_adm": "SAO CRISTOVAO           ",
-        "codra": 7,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 440
+        "nome": "ILHA DO GOVERNADOR      ",
+        "value": 388
     },
     {
-        "nome": "Tanque                    ",
-        "codbairro": "123",
-        "regiao_adm": "JACAREPAGUA             ",
-        "codra": 16,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 131
+        "nome": "VIGARIO GERAL           ",
+        "value": 32
     },
     {
-        "nome": "Taquara                   ",
-        "codbairro": "122",
-        "regiao_adm": "JACAREPAGUA             ",
-        "codra": 16,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 160
+        "nome": "PAVUNA                  ",
+        "value": 993
     },
     {
-        "nome": "Água Santa                ",
-        "codbairro": "067",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 303
-    },
-    {
-        "nome": "Lins de Vasconcelos       ",
-        "codbairro": "062",
-        "regiao_adm": "MEIER                   ",
-        "codra": 13,
-        "rp": "Méier",
-        "cod_rp": "3.2",
-        "value": 400
-    },
-    {
-        "nome": "Freguesia (Jacarepaguá)   ",
-        "codbairro": "120",
-        "regiao_adm": "JACAREPAGUA             ",
-        "codra": 16,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 274
-    },
-    {
-        "nome": "Cidade Nova               ",
-        "codbairro": "008",
-        "regiao_adm": "RIO COMPRIDO            ",
-        "codra": 3,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 374
-    },
-    {
-        "nome": "Praça da Bandeira         ",
-        "codbairro": "032",
-        "regiao_adm": "TIJUCA                  ",
-        "codra": 8,
-        "rp": "Tijuca",
-        "cod_rp": "2.2",
-        "value": 546
-    },
-    {
-        "nome": "Vila Isabel               ",
-        "codbairro": "036",
-        "regiao_adm": "VILA ISABEL             ",
-        "codra": 9,
-        "rp": "Tijuca",
-        "cod_rp": "2.2",
-        "value": 256
-    },
-    {
-        "nome": "Maracanã                  ",
-        "codbairro": "035",
-        "regiao_adm": "VILA ISABEL             ",
-        "codra": 9,
-        "rp": "Tijuca",
-        "cod_rp": "2.2",
-        "value": 957
-    },
-    {
-        "nome": "Glória                    ",
-        "codbairro": "016",
-        "regiao_adm": "BOTAFOGO                ",
-        "codra": 4,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 917
-    },
-    {
-        "nome": "Rio Comprido              ",
-        "codbairro": "007",
-        "regiao_adm": "RIO COMPRIDO            ",
-        "codra": 3,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 898
-    },
-    {
-        "nome": "Santa Teresa              ",
-        "codbairro": "014",
-        "regiao_adm": "SANTA TEREZA            ",
-        "codra": 23,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 176
-    },
-    {
-        "nome": "Estácio                   ",
-        "codbairro": "009",
-        "regiao_adm": "RIO COMPRIDO            ",
-        "codra": 3,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 692
-    },
-    {
-        "nome": "Tijuca                    ",
-        "codbairro": "033",
-        "regiao_adm": "TIJUCA                  ",
-        "codra": 8,
-        "rp": "Tijuca",
-        "cod_rp": "2.2",
-        "value": 384
-    },
-    {
-        "nome": "Catumbi                   ",
-        "codbairro": "006",
-        "regiao_adm": "RIO COMPRIDO            ",
-        "codra": 3,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 440
-    },
-    {
-        "nome": "Grajaú                    ",
-        "codbairro": "038",
-        "regiao_adm": "VILA ISABEL             ",
-        "codra": 9,
-        "rp": "Tijuca",
-        "cod_rp": "2.2",
-        "value": 266
-    },
-    {
-        "nome": "Pechincha                 ",
-        "codbairro": "121",
-        "regiao_adm": "JACAREPAGUA             ",
-        "codra": 16,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 369
-    },
-    {
-        "nome": "Andaraí                   ",
-        "codbairro": "037",
-        "regiao_adm": "VILA ISABEL             ",
-        "codra": 9,
-        "rp": "Tijuca",
-        "cod_rp": "2.2",
-        "value": 807
-    },
-    {
-        "nome": "Catete                    ",
-        "codbairro": "018",
-        "regiao_adm": "BOTAFOGO                ",
-        "codra": 4,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 689
-    },
-    {
-        "nome": "Flamengo                  ",
-        "codbairro": "015",
-        "regiao_adm": "BOTAFOGO                ",
-        "codra": 4,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 201
-    },
-    {
-        "nome": "Laranjeiras               ",
-        "codbairro": "017",
-        "regiao_adm": "BOTAFOGO                ",
-        "codra": 4,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 421
-    },
-    {
-        "nome": "Guaratiba                 ",
-        "codbairro": "151",
-        "regiao_adm": "GUARATIBA               ",
-        "codra": 26,
-        "rp": "Guaratiba",
-        "cod_rp": "5.4",
-        "value": 415
-    },
-    {
-        "nome": "Vargem Grande             ",
-        "codbairro": "131",
-        "regiao_adm": "BARRA DA TIJUCA         ",
-        "codra": 24,
-        "rp": "Barra da Tijuca",
-        "cod_rp": "4.2",
-        "value": 454
-    },
-    {
-        "nome": "Alto da Boa Vista         ",
-        "codbairro": "034",
-        "regiao_adm": "TIJUCA                  ",
-        "codra": 8,
-        "rp": "Tijuca",
-        "cod_rp": "2.2",
-        "value": 529
-    },
-    {
-        "nome": "Cosme Velho               ",
-        "codbairro": "019",
-        "regiao_adm": "BOTAFOGO                ",
-        "codra": 4,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 56
-    },
-    {
-        "nome": "Curicica                  ",
-        "codbairro": "119",
-        "regiao_adm": "JACAREPAGUA             ",
-        "codra": 16,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 840
-    },
-    {
-        "nome": "Botafogo                  ",
-        "codbairro": "020",
-        "regiao_adm": "BOTAFOGO                ",
-        "codra": 4,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 682
-    },
-    {
-        "nome": "Urca                      ",
-        "codbairro": "022",
-        "regiao_adm": "BOTAFOGO                ",
-        "codra": 4,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
+        "nome": "PENHA                   ",
         "value": 95
     },
     {
-        "nome": "Cidade de Deus            ",
-        "codbairro": "118",
-        "regiao_adm": "CIDADE DE DEUS          ",
-        "codra": 34,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 819
+        "nome": "IRAJA                   ",
+        "value": 954
     },
     {
-        "nome": "Sepetiba                  ",
-        "codbairro": "150",
-        "regiao_adm": "SANTA CRUZ              ",
-        "codra": 19,
-        "rp": "Santa Cruz",
-        "cod_rp": "5.3",
-        "value": 187
+        "nome": "ANCHIETA                ",
+        "value": 249
     },
     {
-        "nome": "Anil                      ",
-        "codbairro": "116",
-        "regiao_adm": "JACAREPAGUA             ",
-        "codra": 16,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 802
+        "nome": "MADUREIRA               ",
+        "value": 361
     },
     {
-        "nome": "Jacarepaguá               ",
-        "codbairro": "115",
-        "regiao_adm": "JACAREPAGUA             ",
-        "codra": 16,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 166
+        "nome": "RAMOS                   ",
+        "value": 845
     },
     {
-        "nome": "Camorim                   ",
-        "codbairro": "129",
-        "regiao_adm": "BARRA DA TIJUCA         ",
-        "codra": 24,
-        "rp": "Barra da Tijuca",
-        "cod_rp": "4.2",
-        "value": 815
+        "nome": "COMPLEXO DA MARE        ",
+        "value": 171
     },
     {
-        "nome": "Humaitá                   ",
-        "codbairro": "021",
-        "regiao_adm": "BOTAFOGO                ",
-        "codra": 4,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 665
+        "nome": "REALENGO                ",
+        "value": 404
     },
     {
-        "nome": "Gardênia Azul             ",
-        "codbairro": "117",
-        "regiao_adm": "JACAREPAGUA             ",
-        "codra": 16,
-        "rp": "Jacarepaguá",
-        "cod_rp": "4.1",
-        "value": 994
+        "nome": "SANTA CRUZ              ",
+        "value": 257
     },
     {
-        "nome": "Jardim Botânico           ",
-        "codbairro": "028",
-        "regiao_adm": "LAGOA                   ",
-        "codra": 6,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 36
+        "nome": "INHAUMA                 ",
+        "value": 356
     },
     {
-        "nome": "Vargem Pequena            ",
-        "codbairro": "130",
-        "regiao_adm": "BARRA DA TIJUCA         ",
-        "codra": 24,
-        "rp": "Barra da Tijuca",
-        "cod_rp": "4.2",
-        "value": 240
+        "nome": "COMPLEXO DO ALEMÃO      ",
+        "value": 260
     },
     {
-        "nome": "Copacabana                ",
-        "codbairro": "024",
-        "regiao_adm": "COPACABANA              ",
-        "codra": 5,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 408
+        "nome": "BANGU                   ",
+        "value": 207
     },
     {
-        "nome": "Leme                      ",
-        "codbairro": "023",
-        "regiao_adm": "COPACABANA              ",
-        "codra": 5,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 808
+        "nome": "CAMPO GRANDE            ",
+        "value": 890
     },
     {
-        "nome": "Lagoa                     ",
-        "codbairro": "027",
-        "regiao_adm": "LAGOA                   ",
-        "codra": 6,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
+        "nome": "MEIER                   ",
         "value": 479
     },
     {
-        "nome": "Itanhangá                 ",
-        "codbairro": "127",
-        "regiao_adm": "BARRA DA TIJUCA         ",
-        "codra": 24,
-        "rp": "Barra da Tijuca",
-        "cod_rp": "4.2",
-        "value": 748
+        "nome": "JACAREPAGUA             ",
+        "value": 591
     },
     {
-        "nome": "Gávea                     ",
-        "codbairro": "029",
-        "regiao_adm": "LAGOA                   ",
-        "codra": 6,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 336
+        "nome": "JACAREZINHO             ",
+        "value": 979
     },
     {
-        "nome": "Barra da Tijuca           ",
-        "codbairro": "128",
-        "regiao_adm": "BARRA DA TIJUCA         ",
-        "codra": 24,
-        "rp": "Barra da Tijuca",
-        "cod_rp": "4.2",
-        "value": 836
+        "nome": "SAO CRISTOVAO           ",
+        "value": 904
     },
     {
-        "nome": "Leblon                    ",
-        "codbairro": "026",
-        "regiao_adm": "LAGOA                   ",
-        "codra": 6,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 40
+        "nome": "PORTUARIA               ",
+        "value": 708
     },
     {
-        "nome": "Ipanema                   ",
-        "codbairro": "025",
-        "regiao_adm": "LAGOA                   ",
-        "codra": 6,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 28
+        "nome": "CENTRO                  ",
+        "value": 786
     },
     {
-        "nome": "São Conrado               ",
-        "codbairro": "031",
-        "regiao_adm": "LAGOA                   ",
-        "codra": 6,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 852
+        "nome": "RIO COMPRIDO            ",
+        "value": 695
     },
     {
-        "nome": "Rocinha                   ",
-        "codbairro": "154",
-        "regiao_adm": "ROCINHA                 ",
-        "codra": 27,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 233
+        "nome": "TIJUCA                  ",
+        "value": 282
     },
     {
-        "nome": "Pedra de Guaratiba        ",
-        "codbairro": "153",
-        "regiao_adm": "GUARATIBA               ",
-        "codra": 26,
-        "rp": "Guaratiba",
-        "cod_rp": "5.4",
-        "value": 504
+        "nome": "VILA ISABEL             ",
+        "value": 983
     },
     {
-        "nome": "Recreio dos Bandeirantes  ",
-        "codbairro": "132",
-        "regiao_adm": "BARRA DA TIJUCA         ",
-        "codra": 24,
-        "rp": "Barra da Tijuca",
-        "cod_rp": "4.2",
-        "value": 245
+        "nome": "BOTAFOGO                ",
+        "value": 599
     },
     {
-        "nome": "Vidigal                   ",
-        "codbairro": "030",
-        "regiao_adm": "LAGOA                   ",
-        "codra": 6,
-        "rp": "Zona Sul",
-        "cod_rp": "2.1",
-        "value": 505
+        "nome": "SANTA TEREZA            ",
+        "value": 119
     },
     {
-        "nome": "Joá                       ",
-        "codbairro": "126",
-        "regiao_adm": "BARRA DA TIJUCA         ",
-        "codra": 24,
-        "rp": "Barra da Tijuca",
-        "cod_rp": "4.2",
-        "value": 891
+        "nome": "GUARATIBA               ",
+        "value": 419
     },
     {
-        "nome": "Barra de Guaratiba        ",
-        "codbairro": "152",
-        "regiao_adm": "GUARATIBA               ",
-        "codra": 26,
-        "rp": "Guaratiba",
-        "cod_rp": "5.4",
-        "value": 656
+        "nome": "BARRA DA TIJUCA         ",
+        "value": 761
     },
     {
-        "nome": "Grumari                   ",
-        "codbairro": "133",
-        "regiao_adm": "BARRA DA TIJUCA         ",
-        "codra": 24,
-        "rp": "Barra da Tijuca",
-        "cod_rp": "4.2",
-        "value": 771
+        "nome": "CIDADE DE DEUS          ",
+        "value": 693
     },
     {
-        "nome": "Caju                      ",
-        "codbairro": "004",
-        "regiao_adm": "PORTUARIA               ",
-        "codra": 1,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 146
+        "nome": "LAGOA                   ",
+        "value": 779
     },
     {
-        "nome": "Deodoro                   ",
-        "codbairro": "134",
-        "regiao_adm": "REALENGO                ",
-        "codra": 33,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 770
+        "nome": "COPACABANA              ",
+        "value": 35
     },
     {
-        "nome": "Lapa",
-        "codbairro": "161",
-        "regiao_adm": "CENTRO",
-        "codra": 2,
-        "rp": "Centro",
-        "cod_rp": "1.1",
-        "value": 305
+        "nome": "ROCINHA                 ",
+        "value": 544
     },
     {
-        "nome": "Campo Grande",
-        "codbairro": "144",
-        "regiao_adm": "CAMPO GRANDE            ",
-        "codra": 18,
-        "rp": "Campo Grande",
-        "cod_rp": "5.2",
-        "value": 131
+        "nome": "CENTRO",
+        "value": 190
     },
     {
-        "nome": "Bangu",
-        "codbairro": "141",
-        "regiao_adm": "BANGU                   ",
-        "codra": 17,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 1000
-    },
-    {
-        "nome": "Gericinó",
-        "codbairro": "160",
-        "regiao_adm": "BANGU                   ",
-        "codra": 17,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 161
-    },
-    {
-        "nome": "Jabour",
-        "codbairro": "163",
-        "regiao_adm": "BANGU",
-        "codra": 17,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 131
-    },
-    {
-        "nome": "Vila Kennedy",
-        "codbairro": "162",
-        "regiao_adm": "BANGU                   ",
-        "codra": 17,
-        "rp": "Bangu",
-        "cod_rp": "5.1",
-        "value": 518
-    },
-    {
-        "nome": "Ilha de Guaratiba",
-        "codbairro": "164",
-        "regiao_adm": "GUARATIBA               ",
-        "codra": 26,
-        "rp": "Guaratiba",
-        "cod_rp": "5.4",
-        "value": 425
+        "nome": "BANGU",
+        "value": 35
     }
-  ];
+    ];
+    
+const data = [
+{
+    "nome": "Paquetá                   ",
+    "codbairro": "013",
+    "regiao_adm": "PAQUETA                 ",
+    "codra": 21,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 40
+},
+{
+    "nome": "Freguesia (Ilha)          ",
+    "codbairro": "098",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 400
+},
+{
+    "nome": "Bancários                 ",
+    "codbairro": "097",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 326
+},
+{
+    "nome": "Galeão                    ",
+    "codbairro": "104",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 679
+},
+{
+    "nome": "Tauá                      ",
+    "codbairro": "101",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 520
+},
+{
+    "nome": "Portuguesa                ",
+    "codbairro": "103",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 598
+},
+{
+    "nome": "Moneró                    ",
+    "codbairro": "102",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 600
+},
+{
+    "nome": "Vigário Geral             ",
+    "codbairro": "048",
+    "regiao_adm": "VIGARIO GERAL           ",
+    "codra": 31,
+    "rp": "Penha",
+    "cod_rp": "3.5",
+    "value": 352
+},
+{
+    "nome": "Cocotá                    ",
+    "codbairro": "096",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 524
+},
+{
+    "nome": "Jardim América            ",
+    "codbairro": "049",
+    "regiao_adm": "VIGARIO GERAL           ",
+    "codra": 31,
+    "rp": "Penha",
+    "cod_rp": "3.5",
+    "value": 995
+},
+{
+    "nome": "Jardim Carioca            ",
+    "codbairro": "100",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 88
+},
+{
+    "nome": "Pavuna                    ",
+    "codbairro": "114",
+    "regiao_adm": "PAVUNA                  ",
+    "codra": 25,
+    "rp": "Pavuna",
+    "cod_rp": "3.6",
+    "value": 273
+},
+{
+    "nome": "Cordovil                  ",
+    "codbairro": "046",
+    "regiao_adm": "VIGARIO GERAL           ",
+    "codra": 31,
+    "rp": "Penha",
+    "cod_rp": "3.5",
+    "value": 603
+},
+{
+    "nome": "Jardim Guanabara          ",
+    "codbairro": "099",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 544
+},
+{
+    "nome": "Parada de Lucas           ",
+    "codbairro": "047",
+    "regiao_adm": "VIGARIO GERAL           ",
+    "codra": 31,
+    "rp": "Penha",
+    "cod_rp": "3.5",
+    "value": 974
+},
+{
+    "nome": "Parque Colúmbia           ",
+    "codbairro": "159",
+    "regiao_adm": "PAVUNA                  ",
+    "codra": 25,
+    "rp": "Pavuna",
+    "cod_rp": "3.6",
+    "value": 124
+},
+{
+    "nome": "Praia da Bandeira         ",
+    "codbairro": "095",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 777
+},
+{
+    "nome": "Penha Circular            ",
+    "codbairro": "044",
+    "regiao_adm": "PENHA                   ",
+    "codra": 11,
+    "rp": "Penha",
+    "cod_rp": "3.5",
+    "value": 479
+},
+{
+    "nome": "Cacuia                    ",
+    "codbairro": "093",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 331
+},
+{
+    "nome": "Irajá                     ",
+    "codbairro": "076",
+    "regiao_adm": "IRAJA                   ",
+    "codra": 14,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 613
+},
+{
+    "nome": "Anchieta                  ",
+    "codbairro": "107",
+    "regiao_adm": "ANCHIETA                ",
+    "codra": 22,
+    "rp": "Pavuna",
+    "cod_rp": "3.6",
+    "value": 74
+},
+{
+    "nome": "Acari                     ",
+    "codbairro": "111",
+    "regiao_adm": "PAVUNA                  ",
+    "codra": 25,
+    "rp": "Pavuna",
+    "cod_rp": "3.6",
+    "value": 803
+},
+{
+    "nome": "Pitangueiras              ",
+    "codbairro": "094",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 267
+},
+{
+    "nome": "Costa Barros              ",
+    "codbairro": "113",
+    "regiao_adm": "PAVUNA                  ",
+    "codra": 25,
+    "rp": "Pavuna",
+    "cod_rp": "3.6",
+    "value": 672
+},
+{
+    "nome": "Brás de Pina              ",
+    "codbairro": "045",
+    "regiao_adm": "PENHA                   ",
+    "codra": 11,
+    "rp": "Penha",
+    "cod_rp": "3.5",
+    "value": 284
+},
+{
+    "nome": "Penha                     ",
+    "codbairro": "043",
+    "regiao_adm": "PENHA                   ",
+    "codra": 11,
+    "rp": "Penha",
+    "cod_rp": "3.5",
+    "value": 68
+},
+{
+    "nome": "Zumbi                     ",
+    "codbairro": "092",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 326
+},
+{
+    "nome": "Ribeira                   ",
+    "codbairro": "091",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 512
+},
+{
+    "nome": "Coelho Neto               ",
+    "codbairro": "110",
+    "regiao_adm": "PAVUNA                  ",
+    "codra": 25,
+    "rp": "Pavuna",
+    "cod_rp": "3.6",
+    "value": 192
+},
+{
+    "nome": "Guadalupe                 ",
+    "codbairro": "106",
+    "regiao_adm": "ANCHIETA                ",
+    "codra": 22,
+    "rp": "Pavuna",
+    "cod_rp": "3.6",
+    "value": 143
+},
+{
+    "nome": "Parque Anchieta           ",
+    "codbairro": "108",
+    "regiao_adm": "ANCHIETA                ",
+    "codra": 22,
+    "rp": "Pavuna",
+    "cod_rp": "3.6",
+    "value": 770
+},
+{
+    "nome": "Barros Filho              ",
+    "codbairro": "112",
+    "regiao_adm": "PAVUNA                  ",
+    "codra": 25,
+    "rp": "Pavuna",
+    "cod_rp": "3.6",
+    "value": 959
+},
+{
+    "nome": "Vista Alegre              ",
+    "codbairro": "075",
+    "regiao_adm": "IRAJA                   ",
+    "codra": 14,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 785
+},
+{
+    "nome": "Ricardo de Albuquerque    ",
+    "codbairro": "109",
+    "regiao_adm": "ANCHIETA                ",
+    "codra": 22,
+    "rp": "Pavuna",
+    "cod_rp": "3.6",
+    "value": 162
+},
+{
+    "nome": "Colégio                   ",
+    "codbairro": "077",
+    "regiao_adm": "IRAJA                   ",
+    "codra": 14,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 767
+},
+{
+    "nome": "Honório Gurgel            ",
+    "codbairro": "087",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 731
+},
+{
+    "nome": "Olaria                    ",
+    "codbairro": "042",
+    "regiao_adm": "RAMOS                   ",
+    "codra": 10,
+    "rp": "Ramos",
+    "cod_rp": "3.1",
+    "value": 80
+},
+{
+    "nome": "Vila da Penha             ",
+    "codbairro": "074",
+    "regiao_adm": "IRAJA                   ",
+    "codra": 14,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 245
+},
+{
+    "nome": "Maré                      ",
+    "codbairro": "157",
+    "regiao_adm": "COMPLEXO DA MARE        ",
+    "codra": 30,
+    "rp": "Ramos",
+    "cod_rp": "3.1",
+    "value": 92
+},
+{
+    "nome": "Vila Militar              ",
+    "codbairro": "135",
+    "regiao_adm": "REALENGO                ",
+    "codra": 33,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 836
+},
+{
+    "nome": "Cidade Universitária      ",
+    "codbairro": "105",
+    "regiao_adm": "ILHA DO GOVERNADOR      ",
+    "codra": 20,
+    "rp": "Ilha do Governador",
+    "cod_rp": "3.7",
+    "value": 938
+},
+{
+    "nome": "Rocha Miranda             ",
+    "codbairro": "086",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 997
+},
+{
+    "nome": "Ramos                     ",
+    "codbairro": "041",
+    "regiao_adm": "RAMOS                   ",
+    "codra": 10,
+    "rp": "Ramos",
+    "cod_rp": "3.1",
+    "value": 589
+},
+{
+    "nome": "Realengo                  ",
+    "codbairro": "139",
+    "regiao_adm": "REALENGO                ",
+    "codra": 33,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 605
+},
+{
+    "nome": "Vila Kosmos               ",
+    "codbairro": "072",
+    "regiao_adm": "IRAJA                   ",
+    "codra": 14,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 796
+},
+{
+    "nome": "Marechal Hermes           ",
+    "codbairro": "090",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 193
+},
+{
+    "nome": "Vicente de Carvalho       ",
+    "codbairro": "073",
+    "regiao_adm": "IRAJA                   ",
+    "codra": 14,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 996
+},
+{
+    "nome": "Paciência                 ",
+    "codbairro": "148",
+    "regiao_adm": "SANTA CRUZ              ",
+    "codra": 19,
+    "rp": "Santa Cruz",
+    "cod_rp": "5.3",
+    "value": 923
+},
+{
+    "nome": "Engenho da Rainha         ",
+    "codbairro": "055",
+    "regiao_adm": "INHAUMA                 ",
+    "codra": 12,
+    "rp": "Inhaúma",
+    "cod_rp": "3.4",
+    "value": 533
+},
+{
+    "nome": "Complexo do Alemão        ",
+    "codbairro": "156",
+    "regiao_adm": "COMPLEXO DO ALEMÃO      ",
+    "codra": 29,
+    "rp": "Inhaúma",
+    "cod_rp": "3.4",
+    "value": 166
+},
+{
+    "nome": "Vaz Lobo                  ",
+    "codbairro": "084",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 734
+},
+{
+    "nome": "Padre Miguel              ",
+    "codbairro": "140",
+    "regiao_adm": "BANGU                   ",
+    "codra": 17,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 1
+},
+{
+    "nome": "Bento Ribeiro             ",
+    "codbairro": "089",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 106
+},
+{
+    "nome": "Turiaçú                   ",
+    "codbairro": "085",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 420
+},
+{
+    "nome": "Bonsucesso                ",
+    "codbairro": "040",
+    "regiao_adm": "RAMOS                   ",
+    "codra": 10,
+    "rp": "Ramos",
+    "cod_rp": "3.1",
+    "value": 390
+},
+{
+    "nome": "Inhaúma                   ",
+    "codbairro": "054",
+    "regiao_adm": "INHAUMA                 ",
+    "codra": 12,
+    "rp": "Inhaúma",
+    "cod_rp": "3.4",
+    "value": 709
+},
+{
+    "nome": "Tomás Coelho              ",
+    "codbairro": "056",
+    "regiao_adm": "INHAUMA                 ",
+    "codra": 12,
+    "rp": "Inhaúma",
+    "cod_rp": "3.4",
+    "value": 828
+},
+{
+    "nome": "Santíssimo                ",
+    "codbairro": "143",
+    "regiao_adm": "CAMPO GRANDE            ",
+    "codra": 18,
+    "rp": "Campo Grande",
+    "cod_rp": "5.2",
+    "value": 192
+},
+{
+    "nome": "Madureira                 ",
+    "codbairro": "083",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 252
+},
+{
+    "nome": "Osvaldo Cruz              ",
+    "codbairro": "088",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 453
+},
+{
+    "nome": "Santa Cruz                ",
+    "codbairro": "149",
+    "regiao_adm": "SANTA CRUZ              ",
+    "codra": 19,
+    "rp": "Santa Cruz",
+    "cod_rp": "5.3",
+    "value": 728
+},
+{
+    "nome": "Magalhães Bastos          ",
+    "codbairro": "138",
+    "regiao_adm": "REALENGO                ",
+    "codra": 33,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 126
+},
+{
+    "nome": "Senador Camará            ",
+    "codbairro": "142",
+    "regiao_adm": "BANGU                   ",
+    "codra": 17,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 267
+},
+{
+    "nome": "Cavalcanti                ",
+    "codbairro": "080",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 867
+},
+{
+    "nome": "Campo dos Afonsos         ",
+    "codbairro": "136",
+    "regiao_adm": "REALENGO                ",
+    "codra": 33,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 687
+},
+{
+    "nome": "Higienópolis              ",
+    "codbairro": "050",
+    "regiao_adm": "INHAUMA                 ",
+    "codra": 12,
+    "rp": "Inhaúma",
+    "cod_rp": "3.4",
+    "value": 432
+},
+{
+    "nome": "Manguinhos                ",
+    "codbairro": "039",
+    "regiao_adm": "RAMOS                   ",
+    "codra": 10,
+    "rp": "Ramos",
+    "cod_rp": "3.1",
+    "value": 544
+},
+{
+    "nome": "Engenheiro Leal           ",
+    "codbairro": "081",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 704
+},
+{
+    "nome": "Pilares                   ",
+    "codbairro": "071",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 195
+},
+{
+    "nome": "Del Castilho              ",
+    "codbairro": "053",
+    "regiao_adm": "INHAUMA                 ",
+    "codra": 12,
+    "rp": "Inhaúma",
+    "cod_rp": "3.4",
+    "value": 609
+},
+{
+    "nome": "Piedade                   ",
+    "codbairro": "069",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 289
+},
+{
+    "nome": "Cascadura                 ",
+    "codbairro": "082",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 278
+},
+{
+    "nome": "Vila Valqueire            ",
+    "codbairro": "125",
+    "regiao_adm": "JACAREPAGUA             ",
+    "codra": 16,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 494
+},
+{
+    "nome": "Maria da Graça            ",
+    "codbairro": "052",
+    "regiao_adm": "INHAUMA                 ",
+    "codra": 12,
+    "rp": "Inhaúma",
+    "cod_rp": "3.4",
+    "value": 373
+},
+{
+    "nome": "Quintino Bocaiúva         ",
+    "codbairro": "079",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 907
+},
+{
+    "nome": "Jardim Sulacap            ",
+    "codbairro": "137",
+    "regiao_adm": "REALENGO                ",
+    "codra": 33,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 363
+},
+{
+    "nome": "Campinho                  ",
+    "codbairro": "078",
+    "regiao_adm": "MADUREIRA               ",
+    "codra": 15,
+    "rp": "Madureira",
+    "cod_rp": "3.3",
+    "value": 8
+},
+{
+    "nome": "Abolição                  ",
+    "codbairro": "070",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 349
+},
+{
+    "nome": "Senador Vasconcelos       ",
+    "codbairro": "145",
+    "regiao_adm": "CAMPO GRANDE            ",
+    "codra": 18,
+    "rp": "Campo Grande",
+    "cod_rp": "5.2",
+    "value": 280
+},
+{
+    "nome": "Cosmos                    ",
+    "codbairro": "147",
+    "regiao_adm": "CAMPO GRANDE            ",
+    "codra": 18,
+    "rp": "Campo Grande",
+    "cod_rp": "5.2",
+    "value": 569
+},
+{
+    "nome": "Jacarezinho               ",
+    "codbairro": "155",
+    "regiao_adm": "JACAREZINHO             ",
+    "codra": 28,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 56
+},
+{
+    "nome": "Cachambi                  ",
+    "codbairro": "065",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 788
+},
+{
+    "nome": "Praça Seca                ",
+    "codbairro": "124",
+    "regiao_adm": "JACAREPAGUA             ",
+    "codra": 16,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 192
+},
+{
+    "nome": "Benfica                   ",
+    "codbairro": "012",
+    "regiao_adm": "SAO CRISTOVAO           ",
+    "codra": 7,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 45
+},
+{
+    "nome": "Engenho de Dentro         ",
+    "codbairro": "066",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 156
+},
+{
+    "nome": "São Cristóvão             ",
+    "codbairro": "010",
+    "regiao_adm": "SAO CRISTOVAO           ",
+    "codra": 7,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 728
+},
+{
+    "nome": "Vasco da Gama             ",
+    "codbairro": "158",
+    "regiao_adm": "SAO CRISTOVAO           ",
+    "codra": 7,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 708
+},
+{
+    "nome": "Inhoaíba                  ",
+    "codbairro": "146",
+    "regiao_adm": "CAMPO GRANDE            ",
+    "codra": 18,
+    "rp": "Campo Grande",
+    "cod_rp": "5.2",
+    "value": 266
+},
+{
+    "nome": "Todos os Santos           ",
+    "codbairro": "064",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 904
+},
+{
+    "nome": "Jacaré                    ",
+    "codbairro": "051",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 59
+},
+{
+    "nome": "Encantado                 ",
+    "codbairro": "068",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 994
+},
+{
+    "nome": "Rocha                     ",
+    "codbairro": "058",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 289
+},
+{
+    "nome": "Méier                     ",
+    "codbairro": "063",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 286
+},
+{
+    "nome": "Gamboa                    ",
+    "codbairro": "002",
+    "regiao_adm": "PORTUARIA               ",
+    "codra": 1,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 156
+},
+{
+    "nome": "Santo Cristo              ",
+    "codbairro": "003",
+    "regiao_adm": "PORTUARIA               ",
+    "codra": 1,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 881
+},
+{
+    "nome": "Centro                    ",
+    "codbairro": "005",
+    "regiao_adm": "CENTRO                  ",
+    "codra": 2,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 945
+},
+{
+    "nome": "Sampaio                   ",
+    "codbairro": "060",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 818
+},
+{
+    "nome": "Riachuelo                 ",
+    "codbairro": "059",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 746
+},
+{
+    "nome": "Saúde                     ",
+    "codbairro": "001",
+    "regiao_adm": "PORTUARIA               ",
+    "codra": 1,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 994
+},
+{
+    "nome": "São Francisco Xavier      ",
+    "codbairro": "057",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 162
+},
+{
+    "nome": "Engenho Novo              ",
+    "codbairro": "061",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 725
+},
+{
+    "nome": "Mangueira                 ",
+    "codbairro": "011",
+    "regiao_adm": "SAO CRISTOVAO           ",
+    "codra": 7,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 440
+},
+{
+    "nome": "Tanque                    ",
+    "codbairro": "123",
+    "regiao_adm": "JACAREPAGUA             ",
+    "codra": 16,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 131
+},
+{
+    "nome": "Taquara                   ",
+    "codbairro": "122",
+    "regiao_adm": "JACAREPAGUA             ",
+    "codra": 16,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 160
+},
+{
+    "nome": "Água Santa                ",
+    "codbairro": "067",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 303
+},
+{
+    "nome": "Lins de Vasconcelos       ",
+    "codbairro": "062",
+    "regiao_adm": "MEIER                   ",
+    "codra": 13,
+    "rp": "Méier",
+    "cod_rp": "3.2",
+    "value": 400
+},
+{
+    "nome": "Freguesia (Jacarepaguá)   ",
+    "codbairro": "120",
+    "regiao_adm": "JACAREPAGUA             ",
+    "codra": 16,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 274
+},
+{
+    "nome": "Cidade Nova               ",
+    "codbairro": "008",
+    "regiao_adm": "RIO COMPRIDO            ",
+    "codra": 3,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 374
+},
+{
+    "nome": "Praça da Bandeira         ",
+    "codbairro": "032",
+    "regiao_adm": "TIJUCA                  ",
+    "codra": 8,
+    "rp": "Tijuca",
+    "cod_rp": "2.2",
+    "value": 546
+},
+{
+    "nome": "Vila Isabel               ",
+    "codbairro": "036",
+    "regiao_adm": "VILA ISABEL             ",
+    "codra": 9,
+    "rp": "Tijuca",
+    "cod_rp": "2.2",
+    "value": 256
+},
+{
+    "nome": "Maracanã                  ",
+    "codbairro": "035",
+    "regiao_adm": "VILA ISABEL             ",
+    "codra": 9,
+    "rp": "Tijuca",
+    "cod_rp": "2.2",
+    "value": 957
+},
+{
+    "nome": "Glória                    ",
+    "codbairro": "016",
+    "regiao_adm": "BOTAFOGO                ",
+    "codra": 4,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 917
+},
+{
+    "nome": "Rio Comprido              ",
+    "codbairro": "007",
+    "regiao_adm": "RIO COMPRIDO            ",
+    "codra": 3,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 898
+},
+{
+    "nome": "Santa Teresa              ",
+    "codbairro": "014",
+    "regiao_adm": "SANTA TEREZA            ",
+    "codra": 23,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 176
+},
+{
+    "nome": "Estácio                   ",
+    "codbairro": "009",
+    "regiao_adm": "RIO COMPRIDO            ",
+    "codra": 3,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 692
+},
+{
+    "nome": "Tijuca                    ",
+    "codbairro": "033",
+    "regiao_adm": "TIJUCA                  ",
+    "codra": 8,
+    "rp": "Tijuca",
+    "cod_rp": "2.2",
+    "value": 384
+},
+{
+    "nome": "Catumbi                   ",
+    "codbairro": "006",
+    "regiao_adm": "RIO COMPRIDO            ",
+    "codra": 3,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 440
+},
+{
+    "nome": "Grajaú                    ",
+    "codbairro": "038",
+    "regiao_adm": "VILA ISABEL             ",
+    "codra": 9,
+    "rp": "Tijuca",
+    "cod_rp": "2.2",
+    "value": 266
+},
+{
+    "nome": "Pechincha                 ",
+    "codbairro": "121",
+    "regiao_adm": "JACAREPAGUA             ",
+    "codra": 16,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 369
+},
+{
+    "nome": "Andaraí                   ",
+    "codbairro": "037",
+    "regiao_adm": "VILA ISABEL             ",
+    "codra": 9,
+    "rp": "Tijuca",
+    "cod_rp": "2.2",
+    "value": 807
+},
+{
+    "nome": "Catete                    ",
+    "codbairro": "018",
+    "regiao_adm": "BOTAFOGO                ",
+    "codra": 4,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 689
+},
+{
+    "nome": "Flamengo                  ",
+    "codbairro": "015",
+    "regiao_adm": "BOTAFOGO                ",
+    "codra": 4,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 201
+},
+{
+    "nome": "Laranjeiras               ",
+    "codbairro": "017",
+    "regiao_adm": "BOTAFOGO                ",
+    "codra": 4,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 421
+},
+{
+    "nome": "Guaratiba                 ",
+    "codbairro": "151",
+    "regiao_adm": "GUARATIBA               ",
+    "codra": 26,
+    "rp": "Guaratiba",
+    "cod_rp": "5.4",
+    "value": 415
+},
+{
+    "nome": "Vargem Grande             ",
+    "codbairro": "131",
+    "regiao_adm": "BARRA DA TIJUCA         ",
+    "codra": 24,
+    "rp": "Barra da Tijuca",
+    "cod_rp": "4.2",
+    "value": 454
+},
+{
+    "nome": "Alto da Boa Vista         ",
+    "codbairro": "034",
+    "regiao_adm": "TIJUCA                  ",
+    "codra": 8,
+    "rp": "Tijuca",
+    "cod_rp": "2.2",
+    "value": 529
+},
+{
+    "nome": "Cosme Velho               ",
+    "codbairro": "019",
+    "regiao_adm": "BOTAFOGO                ",
+    "codra": 4,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 56
+},
+{
+    "nome": "Curicica                  ",
+    "codbairro": "119",
+    "regiao_adm": "JACAREPAGUA             ",
+    "codra": 16,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 840
+},
+{
+    "nome": "Botafogo                  ",
+    "codbairro": "020",
+    "regiao_adm": "BOTAFOGO                ",
+    "codra": 4,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 682
+},
+{
+    "nome": "Urca                      ",
+    "codbairro": "022",
+    "regiao_adm": "BOTAFOGO                ",
+    "codra": 4,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 95
+},
+{
+    "nome": "Cidade de Deus            ",
+    "codbairro": "118",
+    "regiao_adm": "CIDADE DE DEUS          ",
+    "codra": 34,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 819
+},
+{
+    "nome": "Sepetiba                  ",
+    "codbairro": "150",
+    "regiao_adm": "SANTA CRUZ              ",
+    "codra": 19,
+    "rp": "Santa Cruz",
+    "cod_rp": "5.3",
+    "value": 187
+},
+{
+    "nome": "Anil                      ",
+    "codbairro": "116",
+    "regiao_adm": "JACAREPAGUA             ",
+    "codra": 16,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 802
+},
+{
+    "nome": "Jacarepaguá               ",
+    "codbairro": "115",
+    "regiao_adm": "JACAREPAGUA             ",
+    "codra": 16,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 166
+},
+{
+    "nome": "Camorim                   ",
+    "codbairro": "129",
+    "regiao_adm": "BARRA DA TIJUCA         ",
+    "codra": 24,
+    "rp": "Barra da Tijuca",
+    "cod_rp": "4.2",
+    "value": 815
+},
+{
+    "nome": "Humaitá                   ",
+    "codbairro": "021",
+    "regiao_adm": "BOTAFOGO                ",
+    "codra": 4,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 665
+},
+{
+    "nome": "Gardênia Azul             ",
+    "codbairro": "117",
+    "regiao_adm": "JACAREPAGUA             ",
+    "codra": 16,
+    "rp": "Jacarepaguá",
+    "cod_rp": "4.1",
+    "value": 994
+},
+{
+    "nome": "Jardim Botânico           ",
+    "codbairro": "028",
+    "regiao_adm": "LAGOA                   ",
+    "codra": 6,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 36
+},
+{
+    "nome": "Vargem Pequena            ",
+    "codbairro": "130",
+    "regiao_adm": "BARRA DA TIJUCA         ",
+    "codra": 24,
+    "rp": "Barra da Tijuca",
+    "cod_rp": "4.2",
+    "value": 240
+},
+{
+    "nome": "Copacabana                ",
+    "codbairro": "024",
+    "regiao_adm": "COPACABANA              ",
+    "codra": 5,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 408
+},
+{
+    "nome": "Leme                      ",
+    "codbairro": "023",
+    "regiao_adm": "COPACABANA              ",
+    "codra": 5,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 808
+},
+{
+    "nome": "Lagoa                     ",
+    "codbairro": "027",
+    "regiao_adm": "LAGOA                   ",
+    "codra": 6,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 479
+},
+{
+    "nome": "Itanhangá                 ",
+    "codbairro": "127",
+    "regiao_adm": "BARRA DA TIJUCA         ",
+    "codra": 24,
+    "rp": "Barra da Tijuca",
+    "cod_rp": "4.2",
+    "value": 748
+},
+{
+    "nome": "Gávea                     ",
+    "codbairro": "029",
+    "regiao_adm": "LAGOA                   ",
+    "codra": 6,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 336
+},
+{
+    "nome": "Barra da Tijuca           ",
+    "codbairro": "128",
+    "regiao_adm": "BARRA DA TIJUCA         ",
+    "codra": 24,
+    "rp": "Barra da Tijuca",
+    "cod_rp": "4.2",
+    "value": 836
+},
+{
+    "nome": "Leblon                    ",
+    "codbairro": "026",
+    "regiao_adm": "LAGOA                   ",
+    "codra": 6,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 40
+},
+{
+    "nome": "Ipanema                   ",
+    "codbairro": "025",
+    "regiao_adm": "LAGOA                   ",
+    "codra": 6,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 28
+},
+{
+    "nome": "São Conrado               ",
+    "codbairro": "031",
+    "regiao_adm": "LAGOA                   ",
+    "codra": 6,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 852
+},
+{
+    "nome": "Rocinha                   ",
+    "codbairro": "154",
+    "regiao_adm": "ROCINHA                 ",
+    "codra": 27,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 233
+},
+{
+    "nome": "Pedra de Guaratiba        ",
+    "codbairro": "153",
+    "regiao_adm": "GUARATIBA               ",
+    "codra": 26,
+    "rp": "Guaratiba",
+    "cod_rp": "5.4",
+    "value": 504
+},
+{
+    "nome": "Recreio dos Bandeirantes  ",
+    "codbairro": "132",
+    "regiao_adm": "BARRA DA TIJUCA         ",
+    "codra": 24,
+    "rp": "Barra da Tijuca",
+    "cod_rp": "4.2",
+    "value": 245
+},
+{
+    "nome": "Vidigal                   ",
+    "codbairro": "030",
+    "regiao_adm": "LAGOA                   ",
+    "codra": 6,
+    "rp": "Zona Sul",
+    "cod_rp": "2.1",
+    "value": 505
+},
+{
+    "nome": "Joá                       ",
+    "codbairro": "126",
+    "regiao_adm": "BARRA DA TIJUCA         ",
+    "codra": 24,
+    "rp": "Barra da Tijuca",
+    "cod_rp": "4.2",
+    "value": 891
+},
+{
+    "nome": "Barra de Guaratiba        ",
+    "codbairro": "152",
+    "regiao_adm": "GUARATIBA               ",
+    "codra": 26,
+    "rp": "Guaratiba",
+    "cod_rp": "5.4",
+    "value": 656
+},
+{
+    "nome": "Grumari                   ",
+    "codbairro": "133",
+    "regiao_adm": "BARRA DA TIJUCA         ",
+    "codra": 24,
+    "rp": "Barra da Tijuca",
+    "cod_rp": "4.2",
+    "value": 771
+},
+{
+    "nome": "Caju                      ",
+    "codbairro": "004",
+    "regiao_adm": "PORTUARIA               ",
+    "codra": 1,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 146
+},
+{
+    "nome": "Deodoro                   ",
+    "codbairro": "134",
+    "regiao_adm": "REALENGO                ",
+    "codra": 33,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 770
+},
+{
+    "nome": "Lapa",
+    "codbairro": "161",
+    "regiao_adm": "CENTRO",
+    "codra": 2,
+    "rp": "Centro",
+    "cod_rp": "1.1",
+    "value": 305
+},
+{
+    "nome": "Campo Grande",
+    "codbairro": "144",
+    "regiao_adm": "CAMPO GRANDE            ",
+    "codra": 18,
+    "rp": "Campo Grande",
+    "cod_rp": "5.2",
+    "value": 131
+},
+{
+    "nome": "Bangu",
+    "codbairro": "141",
+    "regiao_adm": "BANGU                   ",
+    "codra": 17,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 1000
+},
+{
+    "nome": "Gericinó",
+    "codbairro": "160",
+    "regiao_adm": "BANGU                   ",
+    "codra": 17,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 161
+},
+{
+    "nome": "Jabour",
+    "codbairro": "163",
+    "regiao_adm": "BANGU",
+    "codra": 17,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 131
+},
+{
+    "nome": "Vila Kennedy",
+    "codbairro": "162",
+    "regiao_adm": "BANGU                   ",
+    "codra": 17,
+    "rp": "Bangu",
+    "cod_rp": "5.1",
+    "value": 518
+},
+{
+    "nome": "Ilha de Guaratiba",
+    "codbairro": "164",
+    "regiao_adm": "GUARATIBA               ",
+    "codra": 26,
+    "rp": "Guaratiba",
+    "cod_rp": "5.4",
+    "value": 425
+}
+];
 
-  const dataRp = [
-    {
-        "rp": "Centro",
-        "value": 26
-    },
-    {
-        "rp": "Ilha do Governador",
-        "value": 216
-    },
-    {
-        "rp": "Penha",
-        "value": 245
-    },
-    {
-        "rp": "Pavuna",
-        "value": 614
-    },
-    {
-        "rp": "Madureira",
-        "value": 74
-    },
-    {
-        "rp": "Ramos",
-        "value": 407
-    },
-    {
-        "rp": "Bangu",
-        "value": 12
-    },
-    {
-        "rp": "Santa Cruz",
-        "value": 749
-    },
-    {
-        "rp": "Inhaúma",
-        "value": 549
-    },
-    {
-        "rp": "Campo Grande",
-        "value": 212
-    },
-    {
-        "rp": "Méier",
-        "value": 272
-    },
-    {
-        "rp": "Jacarepaguá",
-        "value": 918
-    },
-    {
-        "rp": "Tijuca",
-        "value": 858
-    },
-    {
-        "rp": "Zona Sul",
-        "value": 463
-    },
-    {
-        "rp": "Guaratiba",
-        "value": 9
-    },
-    {
-        "rp": "Barra da Tijuca",
-        "value": 701
-    }
-  ];
+const dataRp = [
+{
+    "nome": "Centro",
+    "value": 26
+},
+{
+    "nome": "Ilha do Governador",
+    "value": 216
+},
+{
+    "nome": "Penha",
+    "value": 245
+},
+{
+    "nome": "Pavuna",
+    "value": 614
+},
+{
+    "nome": "Madureira",
+    "value": 74
+},
+{
+    "nome": "Ramos",
+    "value": 407
+},
+{
+    "nome": "Bangu",
+    "value": 12
+},
+{
+    "nome": "Santa Cruz",
+    "value": 749
+},
+{
+    "nome": "Inhaúma",
+    "value": 549
+},
+{
+    "nome": "Campo Grande",
+    "value": 212
+},
+{
+    "nome": "Méier",
+    "value": 272
+},
+{
+    "nome": "Jacarepaguá",
+    "value": 918
+},
+{
+    "nome": "Tijuca",
+    "value": 858
+},
+{
+    "nome": "Zona Sul",
+    "value": 463
+},
+{
+    "nome": "Guaratiba",
+    "value": 9
+},
+{
+    "nome": "Barra da Tijuca",
+    "value": 701
+}
+];
 
-  const dataRA = [
+const dataRA = [
     {
         "codra": 21,
         "value": 597
@@ -1688,9 +1829,9 @@ export default function Specific() {
         "codra": 27,
         "value": 774
     }
-  ];
+];
 
-  const dataN = [
+const dataN = [
     {
         "codbairro": 13,
         "value": 592
@@ -2347,7 +2488,23 @@ export default function Specific() {
         "codbairro": 164,
         "value": 747
     }
-  ];
+];
+
+export default function Specific() {
+  const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536','#D9D336'];
+  const captionItems = ['Extrema Pobreza', 'Pobreza', 'Baixa Renda', 'Acima de 1/2 S.M.', 'Acima de 1 S.M.']
+  const [mapType, setMapType] = useState<MapType>('neighborhood');
+  
+  const regionData = useMemo(() => {
+    switch (mapType) {
+        case 'ra':
+            return dataRA2;
+        case 'rp':
+            return dataRp;
+        default:
+            return data;
+    }
+  }, [mapType]);
 
   return (
     <Container>
@@ -2386,7 +2543,10 @@ export default function Specific() {
           </Card>
         </Cards>
         <Map>
-          <NeighborhoodsMap name={'Legenda'} captionColors={captionColors} data={data} captionItems={captionItems} regionType="neighborhood" />
+            <ContainerMap>
+                <ToggleGroup setValue={setMapType as React.Dispatch<React.SetStateAction<string>>} value={mapType} options={regionOptions} />
+                <RegionsMap name={'Legenda'} captionColors={captionColors} captionItems={captionItems} data={regionData} regionType={mapType} />
+            </ContainerMap>
         </Map>
       </Content>
     </Container>
