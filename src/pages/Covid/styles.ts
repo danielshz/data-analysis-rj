@@ -9,12 +9,13 @@ export const Container = styled('div', {
 });
 
 export const Content = styled('main', {
-  margin: '4rem 2rem 0',
+  margin: '4rem 2rem 4rem',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   gap: '2rem',
   maxWidth: '1200px',
+  width: '100%',
 
   '@media (min-width: 560px)': {
     margin: '2rem 4rem 0',
@@ -38,6 +39,11 @@ export const Map = styled('section', {
   flexDirection: 'column',
   alignItems: 'center',
   width: '100%',
+  padding: '0 4rem',
+
+  '@media (min-width: 1400px)': {
+    padding: '0',
+  },
 });
 
 export const ContainerMap = styled('div', {
@@ -76,9 +82,14 @@ export const Cards = styled('section', {
   gridTemplateColumns: '1fr 1fr',
   gap: '2rem',
   width: '100%',
-
+  padding: '0 4rem',
+  
   '@media (min-width: 740px)': {
     gridTemplateColumns: '1fr 1fr 1fr 1fr',
+  },
+
+  '@media (min-width: 1400px)': {
+    padding: '0',
   },
 });
 

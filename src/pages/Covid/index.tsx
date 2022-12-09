@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { FiThermometer, FiActivity, FiArrowUpCircle, FiPlusCircle } from 'react-icons/fi';
 
 import RegionsMap, { MapType, regionOptions } from '../../components/RegionsMap';
@@ -2494,6 +2494,37 @@ const dataN = [
     }
 ];
 
+const data3 = [
+    {
+      name: '09/12/2022',
+      Casos: 2400,
+    },
+    {
+      name: '10/12/2022',
+      Casos: 1398,
+    },
+    {
+      name: '11/12/2022',
+      Casos: 9800,
+    },
+    {
+      name: '12/12/2022',
+      Casos: 3908,
+    },
+    {
+      name: '13/12/2022',
+      Casos: 4800,
+    },
+    {
+      name: '14/12/2022',
+      Casos: 3800,
+    },
+    {
+      name: '14/12/2022',
+      Casos: 4300,
+    },
+  ];
+
 export default function Covid() {
     const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536','#D9D336'];
     const captionItems = ['Extrema Pobreza', 'Pobreza', 'Baixa Renda', 'Acima de 1/2 S.M.', 'Acima de 1 S.M.'];
@@ -2572,163 +2603,177 @@ export default function Covid() {
     
     return (
         <Container>
-        <NavBar />
-        <Content>
-        <Cards>
-          <Card>
-            <FiThermometer />
-            <div>
-              <strong>Nº de óbitos</strong>
-              <p>1050</p>
-            </div>
-          </Card>
-          <Card>
-            <FiActivity />
-            <div>
-              <strong>Nº de recuperados</strong>
-              <p>1050</p>
-            </div>
-          </Card>
-          <Card>
-            <FiArrowUpCircle />
-            <div>
-              <strong>Máximo</strong>
-              <p>Magalhães Bastos</p>
-              <p>1050</p>
-            </div>
-          </Card>
-          <Card>
-            <FiPlusCircle />
-            <div>
-              <strong>Nº de casos</strong>
-              <p>10000</p>
-            </div>
-          </Card>
-        </Cards>
-        <Map>
-            <ContainerMap>
-                <ToggleGroup setValue={setMapType as React.Dispatch<React.SetStateAction<string>>} value={mapType} options={regionOptions} />
-                <RegionsMap name={'Legenda'} captionColors={captionColors} captionItems={captionItems} data={regionData} regionType={mapType} />
-            </ContainerMap>
-        </Map>
-        <Chart>
-            {/* <Select className="react-select-container" classNamePrefix="react-select" 
-                options={chartOptions} 
-                placeholder="Bairros" onChange={(value, actionMeta) => setChartRa(value)} 
-            /> */}
-            <FiltersContainer>
-                <ToggleGroup setValue={setChartRa as React.Dispatch<React.SetStateAction<string>>} value={chartRa} options={chartOptions} />
-                <FilterPopover setFilters={setFiltersRA as Dispatch<SetStateAction<FiltersType>>} filters={filtersRA} page="COVID" />
-            </FiltersContainer>
-            <ResponsiveContainer width="100%">
-                {chartRa == 'BarChart' ? (
-                    <BarChart
-                        width={500}
-                        height={300}
-                        data={filteredDataRA}
-                        margin={{
-                            top: 5,
-                            right: 30,
-                            left: 20,
-                            bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="nome" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="value" fill="#24222F" name="Arroz" />
-                    </BarChart>
-                ) : (
-                    <PieChart width={400} height={400}>
-                        <Pie
-                            dataKey="value"
-                            isAnimationActive={false}
-                            data={filteredDataRA}
-                            nameKey="nome"
-                            fill="#24222F"
-                            label
+            <NavBar />
+            <Content>
+                <Cards>
+                <Card>
+                    <FiThermometer />
+                    <div>
+                    <strong>Nº de óbitos</strong>
+                    <p>1050</p>
+                    </div>
+                </Card>
+                <Card>
+                    <FiActivity />
+                    <div>
+                    <strong>Nº de recuperados</strong>
+                    <p>1050</p>
+                    </div>
+                </Card>
+                <Card>
+                    <FiArrowUpCircle />
+                    <div>
+                    <strong>Máximo</strong>
+                    <p>Magalhães Bastos</p>
+                    <p>1050</p>
+                    </div>
+                </Card>
+                <Card>
+                    <FiPlusCircle />
+                    <div>
+                    <strong>Nº de casos</strong>
+                    <p>10000</p>
+                    </div>
+                </Card>
+                </Cards>
+                <Map>
+                    <ContainerMap>
+                        <ToggleGroup setValue={setMapType as React.Dispatch<React.SetStateAction<string>>} value={mapType} options={regionOptions} />
+                        <RegionsMap name={'Legenda'} captionColors={captionColors} captionItems={captionItems} data={regionData} regionType={mapType} />
+                    </ContainerMap>
+                </Map>
+                <Chart>
+                    {/* <Select className="react-select-container" classNamePrefix="react-select" 
+                        options={chartOptions} 
+                        placeholder="Bairros" onChange={(value, actionMeta) => setChartRa(value)} 
+                    /> */}
+                    <FiltersContainer>
+                        <ToggleGroup setValue={setChartRa as React.Dispatch<React.SetStateAction<string>>} value={chartRa} options={chartOptions} />
+                        <FilterPopover setFilters={setFiltersRA as Dispatch<SetStateAction<FiltersType>>} filters={filtersRA} page="COVID" />
+                    </FiltersContainer>
+                    <ResponsiveContainer>
+                        {chartRa == 'BarChart' ? (
+                            <BarChart
+                                data={filteredDataRA}
+                                margin={{
+                                    top: 5,
+                                    right: 30,
+                                    left: 20,
+                                    bottom: 5,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="nome" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="value" fill="#24222F" name="Arroz" />
+                            </BarChart>
+                        ) : (
+                            <PieChart>
+                                <Pie
+                                    dataKey="value"
+                                    isAnimationActive={false}
+                                    data={filteredDataRA}
+                                    nameKey="nome"
+                                    fill="#24222F"
+                                    label
+                                />
+                                <Tooltip />
+                            </PieChart>
+                        )}
+                    </ResponsiveContainer>
+                </Chart>
+                <Chart>
+                    <ResponsiveContainer>
+                        <LineChart
+                            data={data3}
+                            margin={{
+                                top: 5,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line type="monotone" dataKey="Casos" stroke="#8884d8" activeDot={{ r: 8 }} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </Chart>
+                <Chart>
+                    {/* <Select className="react-select-container" classNamePrefix="react-select" 
+                        options={chartOptions} 
+                        placeholder="Bairros" onChange={(value, actionMeta) => setChartRp(value)} 
+                    /> */}
+                    <FiltersContainer>
+                        <ToggleGroup setValue={setChartRp as React.Dispatch<React.SetStateAction<string>>} value={chartRp} options={chartOptions} />
+                        <FilterPopover setFilters={setFiltersRP as Dispatch<SetStateAction<FiltersType>>} filters={filtersRP} page="COVID" />
+                    </FiltersContainer>
+                    <ResponsiveContainer>
+                        {chartRp == 'BarChart' ? (
+                            <BarChart
+                                data={filteredDataRP}
+                                margin={{
+                                    top: 5,
+                                    right: 30,
+                                    left: 20,
+                                    bottom: 5,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="nome" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="value" fill="#24222F" name="Arroz" />
+                            </BarChart>
+                        ) : (
+                            <PieChart>
+                                <Pie
+                                    dataKey="value"
+                                    isAnimationActive={false}
+                                    data={filteredDataRP}
+                                    nameKey="nome"
+                                    fill="#24222F"
+                                    label
+                                />
+                                <Tooltip />
+                            </PieChart>
+                        )}
+                    </ResponsiveContainer>
+                </Chart>
+                <Chart>
+                    <FiltersContainer>
+                        <Select className="react-select-container" classNamePrefix="react-select" isMulti defaultValue={selectedNeighborhoods}
+                            options={[{ label: 'Todos', value: 'Todos' }, ...data.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
+                            placeholder="Selecione os bairros" onChange={(value, actionMeta) => setSelectedNeighborhoods(value)} 
                         />
-                        <Tooltip />
-                    </PieChart>
-                )}
-            </ResponsiveContainer>
-        </Chart>
-        <Chart>
-            {/* <Select className="react-select-container" classNamePrefix="react-select" 
-                options={chartOptions} 
-                placeholder="Bairros" onChange={(value, actionMeta) => setChartRp(value)} 
-            /> */}
-            <FiltersContainer>
-                <ToggleGroup setValue={setChartRp as React.Dispatch<React.SetStateAction<string>>} value={chartRp} options={chartOptions} />
-                <FilterPopover setFilters={setFiltersRP as Dispatch<SetStateAction<FiltersType>>} filters={filtersRP} page="COVID" />
-            </FiltersContainer>
-            <ResponsiveContainer width="100%">
-                {chartRp == 'BarChart' ? (
-                    <BarChart
-                        width={500}
-                        height={300}
-                        data={filteredDataRP}
-                        margin={{
-                            top: 5,
-                            right: 30,
-                            left: 20,
-                            bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="nome" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="value" fill="#24222F" name="Arroz" />
-                    </BarChart>
-                ) : (
-                    <PieChart width={400} height={400}>
-                        <Pie
-                            dataKey="value"
-                            isAnimationActive={false}
-                            data={filteredDataRP}
-                            nameKey="nome"
-                            fill="#24222F"
-                            label
-                        />
-                        <Tooltip />
-                    </PieChart>
-                )}
-            </ResponsiveContainer>
-        </Chart>
-        <Chart>
-            <FiltersContainer>
-                <Select className="react-select-container" classNamePrefix="react-select" isMulti defaultValue={selectedNeighborhoods}
-                    options={[{ label: 'Todos', value: 'Todos' }, ...data.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
-                    placeholder="Selecione os bairros" onChange={(value, actionMeta) => setSelectedNeighborhoods(value)} 
-                />
-                <FilterPopover setFilters={setFiltersN as Dispatch<SetStateAction<FiltersType>>} filters={filtersN} page="COVID" />
-            </FiltersContainer>
-            <ResponsiveContainer width="100%">
-                <BarChart
-                    width={500}
-                    height={300}
-                    data={filteredDataN}
-                    margin={{
-                        top: 5,
-                        right: 30,
-                        left: 20,
-                        bottom: 5,
-                    }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="nome" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="value" fill="#24222F" name="Arroz" />
-                </BarChart>
-            </ResponsiveContainer>
-        </Chart>
-      </Content>
-    </Container>
-  );
+                        <FilterPopover setFilters={setFiltersN as Dispatch<SetStateAction<FiltersType>>} filters={filtersN} page="COVID" />
+                    </FiltersContainer>
+                    <ResponsiveContainer>
+                        <BarChart
+                            data={filteredDataN}
+                            margin={{
+                                top: 5,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="nome" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="value" fill="#24222F" name="Arroz" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </Chart>
+            </Content>
+        </Container>
+    );
 }

@@ -7,7 +7,8 @@ export const Nav = styled('nav', {
   height: '6rem',
   padding: '1.6rem',
   backgroundColor: '$black1',
-  color: '$white1'
+  color: '$white1',
+  maxHeight: '68px',
 });
 
 export const NavList = styled('ul', {
@@ -21,6 +22,7 @@ export const NavList = styled('ul', {
 
 export const NavItem = styled('li', {
   fontSize: '1.4rem',
+  fontWeight: '300',
   cursor: 'pointer',
   height: '100%',
 

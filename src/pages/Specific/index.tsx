@@ -10,6 +10,7 @@ import FilterPopover, { FiltersType } from '../../components/FilterPopover';
 import Select, { MultiValue } from 'react-select';
 
 import { Container, Content, Map, ContainerMap, Cards, Card, Chart, FiltersContainer } from './styles';
+import Loader from '../../components/Loader';
 
 const dataRA2 = [
     {
@@ -2572,164 +2573,158 @@ export default function Specific() {
     
     return (
         <Container>
-        <NavBar />
-        <Content>
-        <Cards>
-          <Card>
-            <FiArrowUpCircle />
-            <div>
-              <strong>Máximo</strong>
-              <p>Magalhães Bastos</p>
-              <p>1050</p>
-            </div>
-          </Card>
-          <Card>
-            <FiArrowDownCircle />
-            <div>
-              <strong>Mínimo</strong>
-              <p>Recreio dos Bandeirantes</p>
-              <p>1050</p>
-            </div>
-          </Card>
-          <Card>
-            <FiBarChart2 />
-            <div>
-              <strong>Média</strong>
-              <p>1050</p>
-            </div>
-          </Card>
-          <Card>
-            <FiPlusCircle />
-            <div>
-              <strong>Total</strong>
-              <p>10000</p>
-            </div>
-          </Card>
-        </Cards>
-        <Map>
-            <ContainerMap>
-                <ToggleGroup setValue={setMapType as React.Dispatch<React.SetStateAction<string>>} value={mapType} options={regionOptions} />
-                <RegionsMap name={'Legenda'} captionColors={captionColors} captionItems={captionItems} data={regionData} regionType={mapType} />
-            </ContainerMap>
-        </Map>
-        <Chart>
-            {/* <Select className="react-select-container" classNamePrefix="react-select" 
-                options={chartOptions} 
-                placeholder="Bairros" onChange={(value, actionMeta) => setChartRa(value)} 
-            /> */}
-            <FiltersContainer>
-                <ToggleGroup setValue={setChartRa as React.Dispatch<React.SetStateAction<string>>} value={chartRa} options={chartOptions} />
-                <FilterPopover setFilters={setFiltersRA as Dispatch<SetStateAction<FiltersType>>} filters={filtersRA} page="CECAD" />
-            </FiltersContainer>
-            <ResponsiveContainer width="100%">
-                {chartRa == 'BarChart' ? (
-                    <BarChart
-                        width={500}
-                        height={300}
-                        data={filteredDataRA}
-                        margin={{
-                            top: 5,
-                            right: 30,
-                            left: 20,
-                            bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="nome" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="value" fill="#24222F" name="Arroz" />
-                    </BarChart>
-                ) : (
-                    <PieChart width={400} height={400}>
-                        <Pie
-                            dataKey="value"
-                            isAnimationActive={false}
-                            data={filteredDataRA}
-                            nameKey="nome"
-                            fill="#24222F"
-                            label
+            <NavBar />
+            <Content>
+                <Cards>
+                <Card>
+                    <FiArrowUpCircle />
+                    <div>
+                    <strong>Máximo</strong>
+                    <p>Magalhães Bastos</p>
+                    <p>1050</p>
+                    </div>
+                </Card>
+                <Card>
+                    <FiArrowDownCircle />
+                    <div>
+                    <strong>Mínimo</strong>
+                    <p>Recreio dos Bandeirantes</p>
+                    <p>1050</p>
+                    </div>
+                </Card>
+                <Card>
+                    <FiBarChart2 />
+                    <div>
+                    <strong>Média</strong>
+                    <p>1050</p>
+                    </div>
+                </Card>
+                <Card>
+                    <FiPlusCircle />
+                    <div>
+                    <strong>Total</strong>
+                    <p>10000</p>
+                    </div>
+                </Card>
+                </Cards>
+                <Map>
+                    <ContainerMap>
+                        <ToggleGroup setValue={setMapType as React.Dispatch<React.SetStateAction<string>>} value={mapType} options={regionOptions} />
+                        <RegionsMap name={'Legenda'} captionColors={captionColors} captionItems={captionItems} data={regionData} regionType={mapType} />
+                    </ContainerMap>
+                </Map>
+                <Chart>
+                    {/* <Select className="react-select-container" classNamePrefix="react-select" 
+                        options={chartOptions} 
+                        placeholder="Bairros" onChange={(value, actionMeta) => setChartRa(value)} 
+                    /> */}
+                    <FiltersContainer>
+                        <ToggleGroup setValue={setChartRa as React.Dispatch<React.SetStateAction<string>>} value={chartRa} options={chartOptions} />
+                        <FilterPopover setFilters={setFiltersRA as Dispatch<SetStateAction<FiltersType>>} filters={filtersRA} page="CECAD" />
+                    </FiltersContainer>
+                    <ResponsiveContainer>
+                        {chartRa == 'BarChart' ? (
+                            <BarChart
+                                data={filteredDataRA}
+                                margin={{
+                                    top: 5,
+                                    right: 30,
+                                    left: 20,
+                                    bottom: 5,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="nome" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="value" fill="#24222F" name="Arroz" />
+                            </BarChart>
+                        ) : (
+                            <PieChart>
+                                <Pie
+                                    dataKey="value"
+                                    isAnimationActive={false}
+                                    data={filteredDataRA}
+                                    nameKey="nome"
+                                    fill="#24222F"
+                                    label
+                                />
+                                <Tooltip />
+                            </PieChart>
+                        )}
+                    </ResponsiveContainer>
+                </Chart>
+                <Chart>
+                    {/* <Select className="react-select-container" classNamePrefix="react-select" 
+                        options={chartOptions} 
+                        placeholder="Bairros" onChange={(value, actionMeta) => setChartRp(value)} 
+                    /> */}
+                    <FiltersContainer>
+                        <ToggleGroup setValue={setChartRp as React.Dispatch<React.SetStateAction<string>>} value={chartRp} options={chartOptions} />
+                        <FilterPopover setFilters={setFiltersRP as Dispatch<SetStateAction<FiltersType>>} filters={filtersRP} page="CECAD" />
+                    </FiltersContainer>
+                    <ResponsiveContainer>
+                        {chartRp == 'BarChart' ? (
+                            <BarChart
+                                data={filteredDataRP}
+                                margin={{
+                                    top: 5,
+                                    right: 30,
+                                    left: 20,
+                                    bottom: 5,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="nome" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="value" fill="#24222F" name="Arroz" />
+                            </BarChart>
+                        ) : (
+                            <PieChart>
+                                <Pie
+                                    dataKey="value"
+                                    isAnimationActive={false}
+                                    data={filteredDataRP}
+                                    nameKey="nome"
+                                    fill="#24222F"
+                                    label
+                                />
+                                <Tooltip />
+                            </PieChart>
+                        )}
+                    </ResponsiveContainer>
+                </Chart>
+                <Chart>
+                    <FiltersContainer>
+                        <Select className="react-select-container" classNamePrefix="react-select" isMulti defaultValue={selectedNeighborhoods}
+                            options={[{ label: 'Todos', value: 'Todos' }, ...data.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
+                            placeholder="Selecione os bairros" onChange={(value, actionMeta) => setSelectedNeighborhoods(value)} 
                         />
-                        <Tooltip />
-                    </PieChart>
-                )}
-            </ResponsiveContainer>
-        </Chart>
-        <Chart>
-            {/* <Select className="react-select-container" classNamePrefix="react-select" 
-                options={chartOptions} 
-                placeholder="Bairros" onChange={(value, actionMeta) => setChartRp(value)} 
-            /> */}
-            <FiltersContainer>
-                <ToggleGroup setValue={setChartRp as React.Dispatch<React.SetStateAction<string>>} value={chartRp} options={chartOptions} />
-                <FilterPopover setFilters={setFiltersRP as Dispatch<SetStateAction<FiltersType>>} filters={filtersRP} page="CECAD" />
-            </FiltersContainer>
-            <ResponsiveContainer width="100%">
-                {chartRp == 'BarChart' ? (
-                    <BarChart
-                        width={500}
-                        height={300}
-                        data={filteredDataRP}
-                        margin={{
-                            top: 5,
-                            right: 30,
-                            left: 20,
-                            bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="nome" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="value" fill="#24222F" name="Arroz" />
-                    </BarChart>
-                ) : (
-                    <PieChart width={400} height={400}>
-                        <Pie
-                            dataKey="value"
-                            isAnimationActive={false}
-                            data={filteredDataRP}
-                            nameKey="nome"
-                            fill="#24222F"
-                            label
-                        />
-                        <Tooltip />
-                    </PieChart>
-                )}
-            </ResponsiveContainer>
-        </Chart>
-        <Chart>
-            <FiltersContainer>
-                <Select className="react-select-container" classNamePrefix="react-select" isMulti defaultValue={selectedNeighborhoods}
-                    options={[{ label: 'Todos', value: 'Todos' }, ...data.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
-                    placeholder="Selecione os bairros" onChange={(value, actionMeta) => setSelectedNeighborhoods(value)} 
-                />
-                <FilterPopover setFilters={setFiltersN as Dispatch<SetStateAction<FiltersType>>} filters={filtersN} page="CECAD" />
-            </FiltersContainer>
-            <ResponsiveContainer width="100%">
-                <BarChart
-                    width={500}
-                    height={300}
-                    data={filteredDataN}
-                    margin={{
-                        top: 5,
-                        right: 30,
-                        left: 20,
-                        bottom: 5,
-                    }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="nome" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="value" fill="#24222F" name="Arroz" />
-                </BarChart>
-            </ResponsiveContainer>
-        </Chart>
-      </Content>
-    </Container>
-  );
+                        <FilterPopover setFilters={setFiltersN as Dispatch<SetStateAction<FiltersType>>} filters={filtersN} page="CECAD" />
+                    </FiltersContainer>
+                    <ResponsiveContainer>
+                        <BarChart
+                            data={filteredDataN}
+                            margin={{
+                                top: 5,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="nome" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="value" fill="#24222F" name="Arroz" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </Chart>
+            </Content>
+        </Container>
+    );
 }
