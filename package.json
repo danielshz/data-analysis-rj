@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-icons": "^1.1.1",
     "@radix-ui/react-popover": "^1.0.2",
+    "@radix-ui/react-select": "^1.1.2",
     "@radix-ui/react-slider": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.0.1",
     "@stitches/react": "^1.2.8",
@@ -19,6 +21,7 @@
     "react-icons": "^4.7.1",
     "react-leaflet": "^4.2.0",
     "react-router-dom": "^6.4.4",
+    "react-select": "^5.7.0",
     "recharts": "^2.1.16",
     "styled-components": "^5.3.6"
   },

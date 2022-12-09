@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { FiArrowUpCircle, FiArrowDownCircle, FiBarChart2, FiPlusCircle } from 'react-icons/fi';
+import { FiThermometer, FiActivity, FiArrowUpCircle, FiPlusCircle } from 'react-icons/fi';
 
 import RegionsMap, { MapType, regionOptions } from '../../components/RegionsMap';
 import NavBar from '../../components/NavBar';
@@ -2494,7 +2494,7 @@ const dataN = [
     }
 ];
 
-export default function Specific() {
+export default function Covid() {
     const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536','#D9D336'];
     const captionItems = ['Extrema Pobreza', 'Pobreza', 'Baixa Renda', 'Acima de 1/2 S.M.', 'Acima de 1 S.M.'];
     const chartOptions = [{ label: 'BarChart', value: 'BarChart'}, { label: 'PieChart', value: 'PieChart' }];
@@ -2576,6 +2576,20 @@ export default function Specific() {
         <Content>
         <Cards>
           <Card>
+            <FiThermometer />
+            <div>
+              <strong>Nº de óbitos</strong>
+              <p>1050</p>
+            </div>
+          </Card>
+          <Card>
+            <FiActivity />
+            <div>
+              <strong>Nº de recuperados</strong>
+              <p>1050</p>
+            </div>
+          </Card>
+          <Card>
             <FiArrowUpCircle />
             <div>
               <strong>Máximo</strong>
@@ -2584,24 +2598,9 @@ export default function Specific() {
             </div>
           </Card>
           <Card>
-            <FiArrowDownCircle />
-            <div>
-              <strong>Mínimo</strong>
-              <p>Recreio dos Bandeirantes</p>
-              <p>1050</p>
-            </div>
-          </Card>
-          <Card>
-            <FiBarChart2 />
-            <div>
-              <strong>Média</strong>
-              <p>1050</p>
-            </div>
-          </Card>
-          <Card>
             <FiPlusCircle />
             <div>
-              <strong>Total</strong>
+              <strong>Nº de casos</strong>
               <p>10000</p>
             </div>
           </Card>
@@ -2619,7 +2618,7 @@ export default function Specific() {
             /> */}
             <FiltersContainer>
                 <ToggleGroup setValue={setChartRa as React.Dispatch<React.SetStateAction<string>>} value={chartRa} options={chartOptions} />
-                <FilterPopover setFilters={setFiltersRA as Dispatch<SetStateAction<FiltersType>>} filters={filtersRA} page="CECAD" />
+                <FilterPopover setFilters={setFiltersRA as Dispatch<SetStateAction<FiltersType>>} filters={filtersRA} page="COVID" />
             </FiltersContainer>
             <ResponsiveContainer width="100%">
                 {chartRa == 'BarChart' ? (
@@ -2663,7 +2662,7 @@ export default function Specific() {
             /> */}
             <FiltersContainer>
                 <ToggleGroup setValue={setChartRp as React.Dispatch<React.SetStateAction<string>>} value={chartRp} options={chartOptions} />
-                <FilterPopover setFilters={setFiltersRP as Dispatch<SetStateAction<FiltersType>>} filters={filtersRP} page="CECAD" />
+                <FilterPopover setFilters={setFiltersRP as Dispatch<SetStateAction<FiltersType>>} filters={filtersRP} page="COVID" />
             </FiltersContainer>
             <ResponsiveContainer width="100%">
                 {chartRp == 'BarChart' ? (
@@ -2706,7 +2705,7 @@ export default function Specific() {
                     options={[{ label: 'Todos', value: 'Todos' }, ...data.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
                     placeholder="Selecione os bairros" onChange={(value, actionMeta) => setSelectedNeighborhoods(value)} 
                 />
-                <FilterPopover setFilters={setFiltersN as Dispatch<SetStateAction<FiltersType>>} filters={filtersN} page="CECAD" />
+                <FilterPopover setFilters={setFiltersN as Dispatch<SetStateAction<FiltersType>>} filters={filtersN} page="COVID" />
             </FiltersContainer>
             <ResponsiveContainer width="100%">
                 <BarChart

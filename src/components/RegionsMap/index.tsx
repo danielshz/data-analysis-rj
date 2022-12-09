@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { LatLngTuple } from 'leaflet';
 import { MapContainer, TileLayer, Popup, Polygon } from 'react-leaflet';
 
+import { FiX, FiHelpCircle } from 'react-icons/fi';
+
 import neighborhoodsData from '../../utils/Limite_de_Bairros.json';
 import rasData from '../../utils/Regioes_Administrativas.json';
 import rpsData from '../../utils/Regioes_de_Planejamento.json';
 
 import { Container, Captions, CaptionTitle, CaptionList, CaptionItem, CaptionColor, HideButton, ShowButton } from './styles';
-import { FiX, FiHelpCircle } from 'react-icons/fi';
 
 interface GeoJSON {
   features: Local[];

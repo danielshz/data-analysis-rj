@@ -1,9 +1,10 @@
+import { useMemo, useState } from 'react';
+
 import RegionsMap, { MapType, regionOptions } from '../../components/RegionsMap';
 import NavBar from '../../components/NavBar';
 import ToggleGroup from '../../components/ToggleGroup';
 
 import { Container, Content, Maps, ContainerMap } from './styles';
-import { useMemo, useState } from 'react';
 
 const dataRA2 = [
 {

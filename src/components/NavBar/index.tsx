@@ -1,5 +1,6 @@
-import { Nav, NavList, NavItem } from './styles';
 import { Link } from "react-router-dom";
+
+import { Nav, NavList, NavItem } from './styles';
 
 export default function NavBar() {
   return (
@@ -10,7 +11,7 @@ export default function NavBar() {
         <NavItem><Link to='../other'>Faixa de renda</Link></NavItem>
         <NavItem><Link to='../other'>Extrema pobreza</Link></NavItem>
         <NavItem><Link to='../other'>Bolsa família</Link></NavItem>
-        <NavItem><Link to='../other'>Casos de COVID-19</Link></NavItem>
+        <NavItem><Link to='../covid'>Casos de COVID-19</Link></NavItem>
       </NavList>
     </Nav>
   );

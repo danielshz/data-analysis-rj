@@ -1,38 +1,9 @@
-import { createGlobalStyle } from 'styled-components';
 import { globalCss } from '@stitches/react';
-
-// export default createGlobalStyle`
-//   * {
-//     margin: 0;
-//     padding: 0;
-//     box-sizing: border-box;
-//     outline: 0;
-//   }
-
-//   body {
-//     background: #FFF;
-//     color: #000;
-//     -webkit-font-smoothing: antialiased;
-//   }
-
-//   body, input, button {
-//     font-family: 'Roboto', serif;
-//     font-size: 10px;
-//   }
-
-//   h1, h2, h3, h4, h5, h6, strong {
-//     font-weight: 500;
-//   }
-  
-//   button {
-//     cursor: pointer;
-//   }
-// `;
 
 export default globalCss({
   body: {
     margin: '0',
-    background: '#F2EFE9',
+    backgroundColor: '#E8E7EE',
     color: '#11181C',
     webkitFontSmoothing: 'antialiased',
   },
@@ -67,6 +38,7 @@ export default globalCss({
     fontSize: '1rem',
     fontFamily: "'Roboto', serif",
   },
+
   '.leaflet-container': {
     width: '100%',
     height: '100%',
@@ -74,5 +46,19 @@ export default globalCss({
   },
   '.leaflet-popup-content-wrapper': {
     textAlign: 'center'
+  },
+  '.react-select__control': {
+    border: 'none !important',
+    boxShadow: 'rgb(23 23 23) 0px 2px 10px !important',
+    maxWidth: '40rem',
+    minWidth: '20rem',
+    '&:focus': {
+      border: 'none !important',
+      boxShadow: 'none !important'
+    },
+
+    svg: {
+      fill: '#48455F'
+    }
   }
 });

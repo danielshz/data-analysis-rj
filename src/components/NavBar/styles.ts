@@ -1,4 +1,3 @@
-// import { styled } from '@stitches/react';
 import { styled } from '../../styles/themes';
 
 export const Nav = styled('nav', {
@@ -7,8 +6,8 @@ export const Nav = styled('nav', {
   width: '100%',
   height: '6rem',
   padding: '1.6rem',
-  backgroundColor: '#24222F',
-  color: '#FFFFFF'
+  backgroundColor: '$black1',
+  color: '$white1'
 });
 
 export const NavList = styled('ul', {
@@ -26,11 +25,11 @@ export const NavItem = styled('li', {
   height: '100%',
 
   ':hover': {
-    color: 'rgba(255,255,255,0.7)',
+    color: '$white2',
   },
   
   a: {
     textDecoration: 'none',
-    color: '#FFFFFF'
+    color: '$white1'
   }
 });

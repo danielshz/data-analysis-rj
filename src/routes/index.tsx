@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import General from '../pages/General';
 import Specific from '../pages/Specific';
+import Covid from '../pages/Covid';
 
 export default createBrowserRouter([
   {
@@ -11,5 +12,9 @@ export default createBrowserRouter([
   {
     path: 'other',
     element: <Specific />,
+  },
+  {
+    path: 'covid',
+    element: <Covid />,
   },
 ]);

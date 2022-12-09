@@ -1,9 +1,10 @@
-import { styled } from '@stitches/react';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
+
+import { styled } from '../../styles/themes';
 
 export const StyledToggleGroup = styled(ToggleGroup.Root, {
   display: 'flex',
-  backgroundColor: '#F2EFE9',
+  backgroundColor: '$white1',
   borderRadius: '10px',
   boxShadow: '0 2px 10px hsl(0 0% 9.0%)',
   width: 'fit-content',
@@ -11,7 +12,7 @@ export const StyledToggleGroup = styled(ToggleGroup.Root, {
 
 export const StyledToggleGroupItem = styled(ToggleGroup.Item, {
   all: 'unset',
-  backgroundColor: '#F2EFE9',
+  backgroundColor: '$white0',
   height: '2rem',
   width: 'fit-content',
   fontSize: '1.2rem',
@@ -20,6 +21,7 @@ export const StyledToggleGroupItem = styled(ToggleGroup.Item, {
   alignItems: 'center',
   justifyContent: 'center',
   padding: '0.5rem 0.8rem',
+  cursor: 'pointer',
 
   '&:first-child': {
     marginLeft: 0,
@@ -31,10 +33,10 @@ export const StyledToggleGroupItem = styled(ToggleGroup.Item, {
     borderBottomRightRadius: '4px',
   },
   '&:hover': {
-    backgroundColor: 'hsl(252 96.9% 97.4%)'
+    backgroundColor: '$white1'
   },
   "&[data-state='on']": {
-    backgroundColor: '#E1E1E1',
+    backgroundColor: '$white2',
     fontWeight: '500'
   },
 });
