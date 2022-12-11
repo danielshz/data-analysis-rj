@@ -6,6 +6,7 @@ import RegionsMap, { MapType, regionOptions } from '../../components/RegionsMap'
 import NavBar from '../../components/NavBar';
 import ToggleGroup from '../../components/ToggleGroup';
 import FilterPopover, { FiltersType } from '../../components/FilterPopover';
+import SelectSingle, { Option } from '../../components/SelectSingle';
 
 import Select, { MultiValue } from 'react-select';
 
@@ -2526,23 +2527,19 @@ const data3 = [
   ];
 
 export default function Covid() {
-    const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536','#D9D336'];
-    const captionItems = ['Extrema Pobreza', 'Pobreza', 'Baixa Renda', 'Acima de 1/2 S.M.', 'Acima de 1 S.M.'];
+    const covidCategories = ['Óbitos', 'Casos', 'Recuperados'];
+    const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536'];
     const chartOptions = [{ label: 'BarChart', value: 'BarChart'}, { label: 'PieChart', value: 'PieChart' }];
 
-    const [filtersRP, setFiltersRP] = useState<FiltersType | null>(null);
-    const [filtersRA, setFiltersRA] = useState<FiltersType | null>(null);
-    const [filtersN, setFiltersN] = useState<FiltersType | null>(null);
+    const [filters, setFilters] = useState<FiltersType | null>(null);
 
     const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<MultiValue<{
         label: string;
         value: string;
     }>>([{ label: 'Todos', value: 'Todos' }]);
 
-    // const [chartRa, setChartRa] = useState<SingleValue<{label: string; value: string}>>(chartOptions[0]);
-    const [chartRa, setChartRa] = useState<string>('PieChart');
-    const [chartRp, setChartRp] = useState<string>('BarChart');
-
+    const [category, setCategory] = useState<Option>({ label: '', value: '' });
+    const [chart, setChart] = useState<string>('BarChart');
     const [mapType, setMapType] = useState<MapType>('neighborhood');
   
     const regionData = useMemo(() => {
@@ -2555,10 +2552,6 @@ export default function Covid() {
                 return data;
         }
     }, [mapType]);
-
-    useEffect(() => {
-        console.log(selectedNeighborhoods);
-    }, [selectedNeighborhoods]);
 
     const neighborhoodsData = useMemo(
         () => !selectedNeighborhoods.some(selected => selected.value === 'Todos') ? 
@@ -2574,32 +2567,39 @@ export default function Covid() {
     //     }
     // }, [filters]);
 
-    const filteredDataRA = useMemo(() => {
-        return dataRA2.filter(data => {
-            if(filtersRA && filtersRA.max !== undefined && filtersRA.min !== undefined) {
-                return data.value >= filtersRA.min && data.value <= filtersRA.max;
-            } else
-                return dataRA2;
-        });
-    }, [filtersRA]);
+    const dataCategory = useMemo(() => {
+        return covidCategories.map(category => ({ label: category, value: category }));
+    }, [location.pathname]);
 
-    const filteredDataRP = useMemo(() => {
-        return dataRp.filter(data => {
-            if(filtersRP && filtersRP.max !== undefined && filtersRP.min !== undefined) {
-                return data.value >= filtersRP.min && data.value <= filtersRP.max;
-            } else
-                return dataRp;
-        });
-    }, [filtersRP]);
+    useEffect(() => {
+        setCategory(dataCategory[0]);
+    }, [dataCategory]);
 
-    const filteredDataN = useMemo(() => {
-        return neighborhoodsData.filter(data => {
-            if(filtersN && filtersN.max !== undefined && filtersN.min !== undefined) {
-                return data.value >= filtersN.min && data.value <= filtersN.max;
-            } else
-                return neighborhoodsData;
-        });
-    }, [filtersN, neighborhoodsData]);
+    const filteredData = useMemo(() => {
+        switch (mapType) {
+            case 'neighborhood':
+                return neighborhoodsData.filter(data => {
+                    if(filters && filters.max !== undefined && filters.min !== undefined) {
+                        return data.value >= filters.min && data.value <= filters.max;
+                    } else
+                        return neighborhoodsData;
+                });
+            case 'ra':
+                return dataRA2.filter(data => {
+                    if(filters && filters.max !== undefined && filters.min !== undefined) {
+                        return data.value >= filters.min && data.value <= filters.max;
+                    } else
+                        return dataRA2;
+                });
+            case 'rp':
+                return dataRp.filter(data => {
+                    if(filters && filters.max !== undefined && filters.min !== undefined) {
+                        return data.value >= filters.min && data.value <= filters.max;
+                    } else
+                        return dataRp;
+                });
+        }
+    }, [filters, neighborhoodsData, mapType]);
     
     return (
         <Container>
@@ -2637,24 +2637,27 @@ export default function Covid() {
                 </Card>
                 </Cards>
                 <Map>
-                    <ContainerMap>
+                    <FiltersContainer>
                         <ToggleGroup setValue={setMapType as React.Dispatch<React.SetStateAction<string>>} value={mapType} options={regionOptions} />
-                        <RegionsMap name={'Legenda'} captionColors={captionColors} captionItems={captionItems} data={regionData} regionType={mapType} />
-                    </ContainerMap>
+                        <SelectSingle value={category as Option} setValue={setCategory} options={dataCategory} />
+                    </FiltersContainer>
+                    <RegionsMap name={'Legenda'} captionColors={captionColors} data={regionData} regionType={mapType} />
                 </Map>
                 <Chart>
-                    {/* <Select className="react-select-container" classNamePrefix="react-select" 
-                        options={chartOptions} 
-                        placeholder="Bairros" onChange={(value, actionMeta) => setChartRa(value)} 
-                    /> */}
                     <FiltersContainer>
-                        <ToggleGroup setValue={setChartRa as React.Dispatch<React.SetStateAction<string>>} value={chartRa} options={chartOptions} />
-                        <FilterPopover setFilters={setFiltersRA as Dispatch<SetStateAction<FiltersType>>} filters={filtersRA} page="COVID" />
+                        {mapType == 'neighborhood' && (
+                            <Select className="react-select-container" classNamePrefix="react-select" isMulti defaultValue={selectedNeighborhoods}
+                                options={[{ label: 'Todos', value: 'Todos' }, ...data.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
+                                placeholder="Selecione os bairros" onChange={(value, actionMeta) => setSelectedNeighborhoods(value)} 
+                            />
+                        )}
+                        <ToggleGroup setValue={setChart as React.Dispatch<React.SetStateAction<string>>} value={chart} options={chartOptions} />
+                        <FilterPopover setFilters={setFilters as Dispatch<SetStateAction<FiltersType>>} filters={filters} page="QUANT" />
                     </FiltersContainer>
                     <ResponsiveContainer>
-                        {chartRa == 'BarChart' ? (
+                        {chart == 'BarChart' ? (
                             <BarChart
-                                data={filteredDataRA}
+                                data={filteredData}
                                 margin={{
                                     top: 5,
                                     right: 30,
@@ -2674,7 +2677,7 @@ export default function Covid() {
                                 <Pie
                                     dataKey="value"
                                     isAnimationActive={false}
-                                    data={filteredDataRA}
+                                    data={filteredData}
                                     nameKey="nome"
                                     fill="#24222F"
                                     label
@@ -2685,6 +2688,9 @@ export default function Covid() {
                     </ResponsiveContainer>
                 </Chart>
                 <Chart>
+                    <FiltersContainer>
+                        <FilterPopover setFilters={setFilters as Dispatch<SetStateAction<FiltersType>>} filters={filters} page="DATE" />
+                    </FiltersContainer>
                     <ResponsiveContainer>
                         <LineChart
                             data={data3}
@@ -2702,75 +2708,6 @@ export default function Covid() {
                             <Legend />
                             <Line type="monotone" dataKey="Casos" stroke="#8884d8" activeDot={{ r: 8 }} />
                         </LineChart>
-                    </ResponsiveContainer>
-                </Chart>
-                <Chart>
-                    {/* <Select className="react-select-container" classNamePrefix="react-select" 
-                        options={chartOptions} 
-                        placeholder="Bairros" onChange={(value, actionMeta) => setChartRp(value)} 
-                    /> */}
-                    <FiltersContainer>
-                        <ToggleGroup setValue={setChartRp as React.Dispatch<React.SetStateAction<string>>} value={chartRp} options={chartOptions} />
-                        <FilterPopover setFilters={setFiltersRP as Dispatch<SetStateAction<FiltersType>>} filters={filtersRP} page="COVID" />
-                    </FiltersContainer>
-                    <ResponsiveContainer>
-                        {chartRp == 'BarChart' ? (
-                            <BarChart
-                                data={filteredDataRP}
-                                margin={{
-                                    top: 5,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 5,
-                                }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="nome" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="value" fill="#24222F" name="Arroz" />
-                            </BarChart>
-                        ) : (
-                            <PieChart>
-                                <Pie
-                                    dataKey="value"
-                                    isAnimationActive={false}
-                                    data={filteredDataRP}
-                                    nameKey="nome"
-                                    fill="#24222F"
-                                    label
-                                />
-                                <Tooltip />
-                            </PieChart>
-                        )}
-                    </ResponsiveContainer>
-                </Chart>
-                <Chart>
-                    <FiltersContainer>
-                        <Select className="react-select-container" classNamePrefix="react-select" isMulti defaultValue={selectedNeighborhoods}
-                            options={[{ label: 'Todos', value: 'Todos' }, ...data.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
-                            placeholder="Selecione os bairros" onChange={(value, actionMeta) => setSelectedNeighborhoods(value)} 
-                        />
-                        <FilterPopover setFilters={setFiltersN as Dispatch<SetStateAction<FiltersType>>} filters={filtersN} page="COVID" />
-                    </FiltersContainer>
-                    <ResponsiveContainer>
-                        <BarChart
-                            data={filteredDataN}
-                            margin={{
-                                top: 5,
-                                right: 30,
-                                left: 20,
-                                bottom: 5,
-                            }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="nome" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="value" fill="#24222F" name="Arroz" />
-                        </BarChart>
                     </ResponsiveContainer>
                 </Chart>
             </Content>

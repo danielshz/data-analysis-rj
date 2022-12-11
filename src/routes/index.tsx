@@ -1,17 +1,25 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import General from '../pages/General';
-import Specific from '../pages/Specific';
+import HealthUnit from '../pages/HealthUnit';
+import CECAD from '../pages/CECAD';
 import Covid from '../pages/Covid';
 
 export default createBrowserRouter([
   {
     path: '/',
-    element: <General />,
+    element: <HealthUnit />,
   },
   {
-    path: 'other',
-    element: <Specific />,
+    path: 'income',
+    element: <CECAD />,
+  },
+  {
+    path: 'poverty',
+    element: <CECAD />,
+  },
+  {
+    path: 'bolsa_familia',
+    element: <CECAD />,
   },
   {
     path: 'covid',

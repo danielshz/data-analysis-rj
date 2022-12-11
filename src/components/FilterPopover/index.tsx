@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { MixerHorizontalIcon, Cross2Icon } from '@radix-ui/react-icons';
 
@@ -8,8 +9,6 @@ import {
   StyledPopoverClose, 
   Input, Label, Fieldset, IconButton, ApplyButton, Text 
 } from './styles';
-import { useState } from 'react';
-
 
 export interface FiltersType {
   max?: number;
@@ -18,7 +17,7 @@ export interface FiltersType {
   end?: Date;
 };
 
-export type FiltersPage = 'CECAD' | 'COVID';
+export type FiltersPage = 'QUANT' | 'DATE';
 
 interface FilterPopoverProps {
   filters: FiltersType | null;
@@ -45,7 +44,7 @@ export default function FilterPopover({ filters, setFilters, page }: FilterPopov
           <Text>
             Filtros
           </Text>
-          {page == 'CECAD' && (
+          {page == 'QUANT' && (
             <>
               <Fieldset>
                 <Label htmlFor="max">
@@ -62,7 +61,7 @@ export default function FilterPopover({ filters, setFilters, page }: FilterPopov
             </>
           )}
 
-          {page == 'COVID' && (
+          {page == 'DATE' && (
             <>
               <Fieldset>
                 <Label htmlFor="begin">
@@ -78,7 +77,7 @@ export default function FilterPopover({ filters, setFilters, page }: FilterPopov
               </Fieldset>
             </>
           )}
-          <ApplyButton onClick={() => setFilters(page === 'CECAD' ? { max, min } : { begin, end })}>
+          <ApplyButton onClick={() => setFilters(page === 'QUANT' ? { max, min } : { begin, end })}>
             <Text>
               Aplicar filtros
             </Text>

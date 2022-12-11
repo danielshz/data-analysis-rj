@@ -5,17 +5,22 @@ import { Nav, NavList, NavItem } from './styles';
 export default function NavBar() {
   const location = useLocation();
 
-  console.log(location);
-
+  const routes = [
+    { name: 'Unidades de saúde', path: '/' },
+    { name: 'Faixa de renda', path: '/income' },
+    { name: 'Extrema pobreza', path: '/poverty' },
+    { name: 'Bolsa família', path: '/bolsa_familia' },
+    { name: 'Covid-19', path: '/covid' },
+  ];
+  
   return (
     <Nav>
       <NavList>
-        <NavItem style={{ fontWeight: location.pathname == '/' ? '500' : '300' }}><Link to='/'>Geral</Link></NavItem>
-        <NavItem><Link to='../other'>Unidades de saúde</Link></NavItem>
-        <NavItem><Link to='../other'>Faixa de renda</Link></NavItem>
-        <NavItem><Link to='../other'>Extrema pobreza</Link></NavItem>
-        <NavItem><Link to='../other'>Bolsa família</Link></NavItem>
-        <NavItem style={{ fontWeight: location.pathname == '/covid' ? '500' : '300' }}><Link to='../covid'>Casos de COVID-19</Link></NavItem>
+        {routes.map(({ name, path }) => (
+          <NavItem key={name} style={{ fontWeight: location.pathname == path ? '500' : '300' }}>
+            <Link to={path}>{name}</Link>
+          </NavItem>
+        ))}
       </NavList>
     </Nav>
   );

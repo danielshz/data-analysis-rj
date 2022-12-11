@@ -1,154 +1,161 @@
-import { useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { FiArrowUpCircle, FiArrowDownCircle, FiBarChart2, FiPlusCircle } from 'react-icons/fi';
+import { useLocation } from 'react-router-dom';
+import Select, { MultiValue } from 'react-select';
 
 import RegionsMap, { MapType, regionOptions } from '../../components/RegionsMap';
 import NavBar from '../../components/NavBar';
 import ToggleGroup from '../../components/ToggleGroup';
+import FilterPopover, { FiltersType } from '../../components/FilterPopover';
+import SelectSingle, { Option } from '../../components/SelectSingle';
+import Loader from '../../components/Loader';
 
-import { Container, Content, Maps, ContainerMap } from './styles';
+import { Container, Content, Map, ContainerMap, Cards, Card, Chart, FiltersContainer } from './styles';
 
 const dataRA2 = [
-{
-    "nome": "PAQUETA                 ",
-    "value": 725
-},
-{
-    "nome": "ILHA DO GOVERNADOR      ",
-    "value": 388
-},
-{
-    "nome": "VIGARIO GERAL           ",
-    "value": 32
-},
-{
-    "nome": "PAVUNA                  ",
-    "value": 993
-},
-{
-    "nome": "PENHA                   ",
-    "value": 95
-},
-{
-    "nome": "IRAJA                   ",
-    "value": 954
-},
-{
-    "nome": "ANCHIETA                ",
-    "value": 249
-},
-{
-    "nome": "MADUREIRA               ",
-    "value": 361
-},
-{
-    "nome": "RAMOS                   ",
-    "value": 845
-},
-{
-    "nome": "COMPLEXO DA MARE        ",
-    "value": 171
-},
-{
-    "nome": "REALENGO                ",
-    "value": 404
-},
-{
-    "nome": "SANTA CRUZ              ",
-    "value": 257
-},
-{
-    "nome": "INHAUMA                 ",
-    "value": 356
-},
-{
-    "nome": "COMPLEXO DO ALEMÃO      ",
-    "value": 260
-},
-{
-    "nome": "BANGU                   ",
-    "value": 207
-},
-{
-    "nome": "CAMPO GRANDE            ",
-    "value": 890
-},
-{
-    "nome": "MEIER                   ",
-    "value": 479
-},
-{
-    "nome": "JACAREPAGUA             ",
-    "value": 591
-},
-{
-    "nome": "JACAREZINHO             ",
-    "value": 979
-},
-{
-    "nome": "SAO CRISTOVAO           ",
-    "value": 904
-},
-{
-    "nome": "PORTUARIA               ",
-    "value": 708
-},
-{
-    "nome": "CENTRO                  ",
-    "value": 786
-},
-{
-    "nome": "RIO COMPRIDO            ",
-    "value": 695
-},
-{
-    "nome": "TIJUCA                  ",
-    "value": 282
-},
-{
-    "nome": "VILA ISABEL             ",
-    "value": 983
-},
-{
-    "nome": "BOTAFOGO                ",
-    "value": 599
-},
-{
-    "nome": "SANTA TEREZA            ",
-    "value": 119
-},
-{
-    "nome": "GUARATIBA               ",
-    "value": 419
-},
-{
-    "nome": "BARRA DA TIJUCA         ",
-    "value": 761
-},
-{
-    "nome": "CIDADE DE DEUS          ",
-    "value": 693
-},
-{
-    "nome": "LAGOA                   ",
-    "value": 779
-},
-{
-    "nome": "COPACABANA              ",
-    "value": 35
-},
-{
-    "nome": "ROCINHA                 ",
-    "value": 544
-},
-{
-    "nome": "CENTRO",
-    "value": 190
-},
-{
-    "nome": "BANGU",
-    "value": 35
-}
+    {
+        "nome": "PAQUETA                 ",
+        "value": 725
+    },
+    {
+        "nome": "ILHA DO GOVERNADOR      ",
+        "value": 388
+    },
+    {
+        "nome": "VIGARIO GERAL           ",
+        "value": 32
+    },
+    {
+        "nome": "PAVUNA                  ",
+        "value": 993
+    },
+    {
+        "nome": "PENHA                   ",
+        "value": 95
+    },
+    {
+        "nome": "IRAJA                   ",
+        "value": 954
+    },
+    {
+        "nome": "ANCHIETA                ",
+        "value": 249
+    },
+    {
+        "nome": "MADUREIRA               ",
+        "value": 361
+    },
+    {
+        "nome": "RAMOS                   ",
+        "value": 845
+    },
+    {
+        "nome": "COMPLEXO DA MARE        ",
+        "value": 171
+    },
+    {
+        "nome": "REALENGO                ",
+        "value": 404
+    },
+    {
+        "nome": "SANTA CRUZ              ",
+        "value": 257
+    },
+    {
+        "nome": "INHAUMA                 ",
+        "value": 356
+    },
+    {
+        "nome": "COMPLEXO DO ALEMÃO      ",
+        "value": 260
+    },
+    {
+        "nome": "BANGU                   ",
+        "value": 207
+    },
+    {
+        "nome": "CAMPO GRANDE            ",
+        "value": 890
+    },
+    {
+        "nome": "MEIER                   ",
+        "value": 479
+    },
+    {
+        "nome": "JACAREPAGUA             ",
+        "value": 591
+    },
+    {
+        "nome": "JACAREZINHO             ",
+        "value": 979
+    },
+    {
+        "nome": "SAO CRISTOVAO           ",
+        "value": 904
+    },
+    {
+        "nome": "PORTUARIA               ",
+        "value": 708
+    },
+    {
+        "nome": "CENTRO                  ",
+        "value": 786
+    },
+    {
+        "nome": "RIO COMPRIDO            ",
+        "value": 695
+    },
+    {
+        "nome": "TIJUCA                  ",
+        "value": 282
+    },
+    {
+        "nome": "VILA ISABEL             ",
+        "value": 983
+    },
+    {
+        "nome": "BOTAFOGO                ",
+        "value": 599
+    },
+    {
+        "nome": "SANTA TEREZA            ",
+        "value": 119
+    },
+    {
+        "nome": "GUARATIBA               ",
+        "value": 419
+    },
+    {
+        "nome": "BARRA DA TIJUCA         ",
+        "value": 761
+    },
+    {
+        "nome": "CIDADE DE DEUS          ",
+        "value": 693
+    },
+    {
+        "nome": "LAGOA                   ",
+        "value": 779
+    },
+    {
+        "nome": "COPACABANA              ",
+        "value": 35
+    },
+    {
+        "nome": "ROCINHA                 ",
+        "value": 544
+    },
+    {
+        "nome": "CENTRO",
+        "value": 190
+    },
+    {
+        "nome": "BANGU",
+        "value": 35
+    }
 ];
-
+    
 const data = [
 {
     "nome": "Paquetá                   ",
@@ -2489,52 +2496,187 @@ const dataN = [
     }
 ];
 
-export default function General() {
-  const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536','#D9D336'];
-  const captionItems = ['Extrema Pobreza', 'Pobreza', 'Baixa Renda', 'Acima de 1/2 S.M.', 'Acima de 1 S.M.'];
-  
-  const [mapType1, setMapType1] = useState<MapType>('neighborhood');
-  const [mapType2, setMapType2] = useState<MapType>('neighborhood');
+const income = ['Extrema Pobreza', 'Pobreza', 'Baixa Renda', 'Acima de 1/2 S.M.'];
+const poverty = ['Sem registro', 'Cadastrado'];
+const bolsa_familia = ['Possui', 'Não possui'];
 
-  const regionData1 = useMemo(() => {
-    switch (mapType1) {
-        case 'ra':
-            return dataRA2;
-        case 'rp':
-            return dataRp;
-        default:
-            return data;
-    }
-  }, [mapType1]);
+export default function CECAD() {
+    const location = useLocation();
 
-  const regionData2 = useMemo(() => {
-    switch (mapType2) {
-        case 'ra':
-            return dataRA2;
-        case 'rp':
-            return dataRp;
-        default:
-            return data;
-    }
-  }, [mapType2]);
+    const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536'];
+    const chartOptions = [{ label: 'BarChart', value: 'BarChart'}, { label: 'PieChart', value: 'PieChart' }];
+
+    const [filters, setFilters] = useState<FiltersType | null>(null);
+
+    const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<MultiValue<{
+        label: string;
+        value: string;
+    }>>([{ label: 'Todos', value: 'Todos' }]);
+
+    const [category, setCategory] = useState<Option>({ label: '', value: '' });
+    const [chart, setChart] = useState<string>('BarChart');
+    const [mapType, setMapType] = useState<MapType>('neighborhood');
+
+    const dataCategory = useMemo(() => {
+        switch (location.pathname) {
+            case '/income':
+                return income.map(category => ({ value: category, label: category }));
+            case '/poverty':
+                return poverty.map(category => ({ value: category, label: category }));
+            case '/bolsa_familia':
+                return bolsa_familia.map(category => ({ value: category, label: category }));
+        }
+
+        return [{ label: '', value: '' }];
+    }, [location.pathname]);
+
+    useEffect(() => {
+        setCategory(dataCategory[0]);
+    }, [dataCategory]);
+
+    useEffect(() => {
+        console.log(category);
+    }, [category])
   
-  return (
-    <Container>
-      <NavBar />
-      <Content>
-        <Maps>
-            <ContainerMap>
-                <ToggleGroup setValue={setMapType1 as React.Dispatch<React.SetStateAction<string>>} value={mapType1}options={regionOptions} />
-                <RegionsMap name={'Legenda'} captionColors={captionColors} 
-                    data={regionData1} regionType={mapType1} 
-                />
-            </ContainerMap>
-            <ContainerMap>
-                <ToggleGroup setValue={setMapType2 as React.Dispatch<React.SetStateAction<string>>} value={mapType2} options={regionOptions} />
-                <RegionsMap name={'Legenda'} captionColors={captionColors} data={regionData2} regionType={mapType2} />
-            </ContainerMap>
-        </Maps>
-        </Content>
-    </Container>
-  );
+    const regionData = useMemo(() => {
+        switch (mapType) {
+            case 'ra':
+                return dataRA2;
+            case 'rp':
+                return dataRp;
+            default:
+                return data;
+        }
+    }, [mapType]);
+
+    const neighborhoodsData = useMemo(
+        () => !selectedNeighborhoods.some(selected => selected.value === 'Todos') ? 
+            data.filter(({ nome, codbairro }) => selectedNeighborhoods.some(selected => selected.value === codbairro)) :
+            data, 
+        [selectedNeighborhoods]
+    );
+    
+    // useEffect(() => {
+    //     if(filters != null) {
+    //         console.log('Filters applied');
+    //         console.log(filters);
+    //     }
+    // }, [filters]);
+
+    const filteredData = useMemo(() => {
+        switch (mapType) {
+            case 'neighborhood':
+                return neighborhoodsData.filter(data => {
+                    if(filters && filters.max !== undefined && filters.min !== undefined) {
+                        return data.value >= filters.min && data.value <= filters.max;
+                    } else
+                        return neighborhoodsData;
+                });
+            case 'ra':
+                return dataRA2.filter(data => {
+                    if(filters && filters.max !== undefined && filters.min !== undefined) {
+                        return data.value >= filters.min && data.value <= filters.max;
+                    } else
+                        return dataRA2;
+                });
+            case 'rp':
+                return dataRp.filter(data => {
+                    if(filters && filters.max !== undefined && filters.min !== undefined) {
+                        return data.value >= filters.min && data.value <= filters.max;
+                    } else
+                        return dataRp;
+                });
+        }
+    }, [filters, neighborhoodsData, mapType]);
+    
+    return (
+        <Container>
+            <NavBar />
+            <Content>
+                <Cards>
+                    <Card>
+                        <FiArrowUpCircle />
+                        <div>
+                        <strong>Máximo</strong>
+                        <p>Magalhães Bastos</p>
+                        <p>1050</p>
+                        </div>
+                    </Card>
+                    <Card>
+                        <FiArrowDownCircle />
+                        <div>
+                        <strong>Mínimo</strong>
+                        <p>Recreio dos Bandeirantes</p>
+                        <p>1050</p>
+                        </div>
+                    </Card>
+                    <Card>
+                        <FiBarChart2 />
+                        <div>
+                        <strong>Média</strong>
+                        <p>1050</p>
+                        </div>
+                    </Card>
+                    <Card>
+                        <FiPlusCircle />
+                        <div>
+                        <strong>Total</strong>
+                        <p>10000</p>
+                        </div>
+                    </Card>
+                </Cards>
+                <FiltersContainer>
+                    <ToggleGroup setValue={setMapType as React.Dispatch<React.SetStateAction<string>>} value={mapType} options={regionOptions} />
+                    <SelectSingle value={category as Option} setValue={setCategory} options={dataCategory} />
+                </FiltersContainer>
+                <Map>
+                    <RegionsMap name={'Legenda'} captionColors={captionColors} data={regionData} regionType={mapType} />
+                </Map>
+                <Chart>
+                    <FiltersContainer>
+                        {mapType == 'neighborhood' && (
+                            <Select className="react-select-container" classNamePrefix="react-select" isMulti defaultValue={selectedNeighborhoods}
+                                options={[{ label: 'Todos', value: 'Todos' }, ...data.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
+                                placeholder="Selecione os bairros" onChange={(value, actionMeta) => setSelectedNeighborhoods(value)} 
+                            />
+                        )}
+                        <ToggleGroup setValue={setChart as React.Dispatch<React.SetStateAction<string>>} value={chart} options={chartOptions} />
+                        <FilterPopover setFilters={setFilters as Dispatch<SetStateAction<FiltersType>>} filters={filters} page="QUANT" />
+                    </FiltersContainer>
+                    <ResponsiveContainer>
+                        {chart == 'BarChart' ? (
+                            <BarChart
+                                data={filteredData}
+                                margin={{
+                                    top: 5,
+                                    right: 30,
+                                    left: 20,
+                                    bottom: 5,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="nome" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="value" fill="#24222F" name="Arroz" />
+                            </BarChart>
+                        ) : (
+                            <PieChart>
+                                <Pie
+                                    dataKey="value"
+                                    isAnimationActive={false}
+                                    data={filteredData}
+                                    nameKey="nome"
+                                    fill="#24222F"
+                                    label
+                                />
+                                <Tooltip />
+                            </PieChart>
+                        )}
+                    </ResponsiveContainer>
+                </Chart>
+            </Content>
+        </Container>
+    );
 }

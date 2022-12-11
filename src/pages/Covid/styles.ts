@@ -10,6 +10,7 @@ export const Container = styled('div', {
 
 export const Content = styled('main', {
   margin: '4rem 2rem 4rem',
+  paddingBottom: '4rem',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -38,6 +39,7 @@ export const Map = styled('section', {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
+  gap: '2rem',
   width: '100%',
   padding: '0 4rem',
 
