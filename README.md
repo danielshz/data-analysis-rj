@@ -34,7 +34,7 @@ Para executar o projeto você precisará ter instaladas as seguintes ferramentas
 1. No terminal, executar o seguinte comando:
 
    ```.env
-   git clone 
+   git clone https://github.com/danielShz/Trabalho-Final-BD.git
    ```
 2. No diretório raiz do projeto, utilizar o comando a seguir:
    - Instalação dos pacotes
