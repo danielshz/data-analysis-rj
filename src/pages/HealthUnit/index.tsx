@@ -2566,6 +2566,7 @@ export default function HealthUnit() {
         <Container>
             <NavBar />
             <Content>
+                <h1>Quantidade de unidades de saúde por região</h1>
                 <Cards>
                     <Card>
                         <FiArrowUpCircle />

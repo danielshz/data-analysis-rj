@@ -18,6 +18,10 @@ export const Content = styled('main', {
   maxWidth: '1200px',
   width: '100%',
 
+  '& > h1': {
+    fontWeight: '100',
+  },
+
   '@media (min-width: 560px)': {
     margin: '2rem 4rem 0',
   },

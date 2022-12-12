@@ -2605,36 +2605,37 @@ export default function Covid() {
         <Container>
             <NavBar />
             <Content>
+                <h1>Quantidade de {category.value.toLowerCase()}</h1>
                 <Cards>
-                <Card>
-                    <FiThermometer />
-                    <div>
-                    <strong>Nº de óbitos</strong>
-                    <p>1050</p>
-                    </div>
-                </Card>
-                <Card>
-                    <FiActivity />
-                    <div>
-                    <strong>Nº de recuperados</strong>
-                    <p>1050</p>
-                    </div>
-                </Card>
-                <Card>
-                    <FiArrowUpCircle />
-                    <div>
-                    <strong>Máximo</strong>
-                    <p>Magalhães Bastos</p>
-                    <p>1050</p>
-                    </div>
-                </Card>
-                <Card>
-                    <FiPlusCircle />
-                    <div>
-                    <strong>Nº de casos</strong>
-                    <p>10000</p>
-                    </div>
-                </Card>
+                    <Card>
+                        <FiThermometer />
+                        <div>
+                        <strong>Nº de óbitos</strong>
+                        <p>1050</p>
+                        </div>
+                    </Card>
+                    <Card>
+                        <FiActivity />
+                        <div>
+                        <strong>Nº de recuperados</strong>
+                        <p>1050</p>
+                        </div>
+                    </Card>
+                    <Card>
+                        <FiArrowUpCircle />
+                        <div>
+                        <strong>Máximo</strong>
+                        <p>Magalhães Bastos</p>
+                        <p>1050</p>
+                        </div>
+                    </Card>
+                    <Card>
+                        <FiPlusCircle />
+                        <div>
+                        <strong>Nº de casos</strong>
+                        <p>10000</p>
+                        </div>
+                    </Card>
                 </Cards>
                 <Map>
                     <FiltersContainer>

@@ -2588,11 +2588,23 @@ export default function CECAD() {
                 });
         }
     }, [filters, neighborhoodsData, mapType]);
+
+    const pageDescription = useMemo(() => {
+        switch (location.pathname) {
+            case '/income':
+                return `Quantidade de famílias/pessoas em ${category.value}`;
+            case '/poverty':
+                return `Quantidade de famílias/pessoas ${category.value == 'Sem registro' ? 'sem' : 'com'} CadUnico`;
+            case '/bolsa_familia':
+                return `Quantidade de famílias/pessoas ${category.value == 'Não possui' ? 'sem' : 'com'} Bolsa família`;
+        }
+    }, [category]);
     
     return (
         <Container>
             <NavBar />
             <Content>
+                <h1>{pageDescription}</h1>
                 <Cards>
                     <Card>
                         <FiArrowUpCircle />
