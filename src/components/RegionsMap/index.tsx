@@ -32,7 +32,7 @@ interface Geometry {
   coordinates: LatLngTuple[];
 }
 
-interface RegionsData extends Properties {
+export interface RegionsData extends Properties {
   value: number;
 }
 
@@ -47,9 +47,9 @@ interface RegionsMapProps {
 export type MapType = 'ra' | 'rp' | 'neighborhood';
 
 export const regionOptions = [
-  {value: 'ra', label: 'Região Administrativa'}, 
-  {value: 'neighborhood', label: 'Bairro'}, 
-  {value: 'rp', label: 'Região de Planejamento'}
+  { value: 'ra', label: 'Região Administrativa' }, 
+  { value: 'neighborhood', label: 'Bairro' }, 
+  { value: 'rp', label: 'Região de Planejamento' }
 ];
 
 export default function RegionsMap({ name, captionItems, captionColors, data, regionType }: RegionsMapProps) {
@@ -100,15 +100,15 @@ export default function RegionsMap({ name, captionItems, captionColors, data, re
     
     switch (regionType) {
       case 'rp':
-        region = data.find(region => region.nome == properties.nome);
+        region = data.find(region => region.nome.trim() == properties.nome.trim());
         break;
 
       case 'ra':
-        region = data.find(region => region.nome.trim() == properties.nome);
+        region = data.find(region => region.nome.trim() == properties.nome.trim());
         break;
     
       default:
-        region = data.find(region => region.nome == properties.nome);
+        region = data.find(region => region.nome.trim() == properties.nome.trim());
         break;
     }
 

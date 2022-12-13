@@ -24,7 +24,7 @@ export const Captions = styled('div', {
   display: 'flex',
   flexDirection: 'column',
 
-  padding: '1rem 1.2rem',
+  padding: '1rem 2rem',
   borderRadius: '10px',
 
   boxShadow: '0 2px 10px hsl(0 0% 9.0%)'

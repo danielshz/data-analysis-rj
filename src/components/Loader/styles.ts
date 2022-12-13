@@ -26,7 +26,7 @@ export const StyledLoader = styled('div', {
     border: '0.8rem solid $black1',
     borderRadius: '50%',
     animation: `${ldsRing} 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite`,
-    borderColor: '$white0 transparent transparent transparent',
+    borderColor: '$black1 transparent transparent transparent',
 
     '&:nth-child(1)': {
       animationDelay: '-0.45s',

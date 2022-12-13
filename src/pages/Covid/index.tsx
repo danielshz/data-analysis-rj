@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { FiThermometer, FiActivity, FiArrowUpCircle, FiPlusCircle } from 'react-icons/fi';
+import { FiArrowUpCircle, FiPlusCircle, FiArrowDownCircle, FiBarChart2 } from 'react-icons/fi';
 
 import RegionsMap, { MapType, regionOptions } from '../../components/RegionsMap';
 import NavBar from '../../components/NavBar';
@@ -2608,32 +2608,33 @@ export default function Covid() {
                 <h1>Quantidade de {category.value.toLowerCase()}</h1>
                 <Cards>
                     <Card>
-                        <FiThermometer />
-                        <div>
-                        <strong>Nº de óbitos</strong>
-                        <p>1050</p>
-                        </div>
-                    </Card>
-                    <Card>
-                        <FiActivity />
-                        <div>
-                        <strong>Nº de recuperados</strong>
-                        <p>1050</p>
-                        </div>
-                    </Card>
-                    <Card>
                         <FiArrowUpCircle />
                         <div>
                         <strong>Máximo</strong>
                         <p>Magalhães Bastos</p>
-                        <p>1050</p>
+                        {/* <p>{cardsData?.maximo}</p> */}
+                        </div>
+                    </Card>
+                    <Card>
+                        <FiArrowDownCircle />
+                        <div>
+                        <strong>Mínimo</strong>
+                        <p>Recreio dos Bandeirantes</p>
+                        {/* <p>{cardsData?.minimo}</p> */}
+                        </div>
+                    </Card>
+                    <Card>
+                        <FiBarChart2 />
+                        <div>
+                        <strong>Média</strong>
+                        {/* <p>{cardsData?.media}</p> */}
                         </div>
                     </Card>
                     <Card>
                         <FiPlusCircle />
                         <div>
-                        <strong>Nº de casos</strong>
-                        <p>10000</p>
+                        <strong>Total</strong>
+                        {/* <p>{cardsData?.total}</p> */}
                         </div>
                     </Card>
                 </Cards>
