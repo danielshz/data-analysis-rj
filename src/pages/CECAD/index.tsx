@@ -36,9 +36,16 @@ const income = [
     { label: 'Acima de 1/2 S.M.', value: 'faixa_renda_acima_1_5' },
 ];
 
+const incomeURL = {
+    'Extrema Pobreza': 'faixa-renda-extrema-pobreza',
+    'Pobreza': 'pobreza',
+    'Baixa Renda': 'baixa-renda',
+    'Acima de 1/2 S.M.': 'acima1-5',
+};
+
 const poverty = [
-    { label: 'Sem registro', value: 'extrema_pobreza_cadastrado' },
-    { label: 'Cadastrado', value: 'extrema_pobreza_sem_registro' },
+    { label: 'Cadastrado', value: 'extrema_pobreza_cadastrado' },
+    { label: 'Sem registro', value: 'extrema_pobreza_sem_registro' },
 ];
 
 const bolsa_familia = [
@@ -121,8 +128,34 @@ export default function CECAD() {
     }, [location.pathname]);
 
     useEffect(() => {
+        setNeighborhoodsList(neighborhoodsData.features.map(({ properties }) => ({ nome: properties.nome, codbairro: properties.codbairro })));
+    }, []);
+
+    useEffect(() => {
         setCategory(dataCategory[0]);
     }, [dataCategory]);
+
+    useEffect(() => {
+        let currentData: any[] = [];
+
+        switch (location.pathname) {
+            case '/income':
+                currentData = incomeData;
+                break;
+            case '/poverty':
+                currentData = povertyData;
+                break;
+            case '/bolsa_familia':
+                currentData = bolsaFamiliaData;
+                break;
+        }
+
+        if(currentData.length > 0) {
+            const { min, max } = getMinMax(currentData);
+            setFilters({ max, min });
+        }
+
+    }, [location.pathname, category, incomeData, povertyData, bolsaFamiliaData]);
 
     useEffect(() => {
         async function getData() {
@@ -134,28 +167,69 @@ export default function CECAD() {
             setLoader(false);
         }
 
-        getData();
-    }, [location.pathname, mapType]);
+        if(category && category.label != '')
+            getData();
+    }, [location.pathname, mapType, category]);
+    
 
     async function getCardsData() {
         const pathname = location.pathname as '/income' | '/poverty' | '/bolsa_familia';
-        const response = await api.get(`quantidade/${pathnameToUrl[pathname]}/${mapTypeToUrl[mapType]}/metrica`);
 
-        setCardsData(response.data);
+        let response;
+
+        if(pathname == '/income') {
+            response = await api.get(`quantidade/${incomeURL[category.label]}/${mapTypeToUrl[mapType]}/metrica`);
+
+            setCardsData(response.data);
+        } else {
+            response = await api.get(`quantidade/${pathnameToUrl[pathname]}/${mapTypeToUrl[mapType]}/metrica`);
+            setCardsData(response.data[category.value]);
+        }
     }
 
     async function getMainData() {
         const pathname = location.pathname as '/income' | '/poverty' | '/bolsa_familia';
-        const response = await api.get(`quantidade/${pathnameToUrl[pathname]}/${mapTypeToUrl[mapType]}`);
+
+        let response;
+
+        if(pathname == '/income')
+            response = await api.get(`quantidade/${incomeURL[category.label]}/${mapTypeToUrl[mapType]}`);
+        else
+            response = await api.get(`quantidade/${pathnameToUrl[pathname]}/${mapTypeToUrl[mapType]}`);
 
         switch (pathname) {
             case '/income':
                 setIncomeData(response.data);
+                break;
             case '/poverty':
                 setPovertyData(response.data);
+                break;
             case '/bolsa_familia':
                 setBolsaFamiliaData(response.data);
+                break;
         }
+
+        const { min, max } = getMinMax(response.data);
+        setFilters({ max, min });
+    }
+
+    function getMinMax(data: any) {
+        type Accumulator = {
+            min: number;
+            max: number;
+        };
+
+        const { min, max } = data.reduce((accumulator: Accumulator | null, currentValue: any) => {
+            if(accumulator != null) {
+                const value = currentValue[category.value];
+                const { min, max } = accumulator;
+        
+                return { min: value < min ? value : min, max: value > max ? value : max };
+            } else
+                return { min: currentValue[category.value], max: currentValue[category.value] };
+        }, null) as Accumulator;
+
+        return { min, max };
     }
   
     const regionData = useMemo(() => {
@@ -172,14 +246,6 @@ export default function CECAD() {
 
         return null;
     }, [location.pathname, mapType, category, incomeData, povertyData, bolsaFamiliaData]);
-
-    // useEffect(() => {
-    //     console.log(regionData);<{ nome: string; codbairro: string; }[]>
-    // }, [regionData]);
-
-    useEffect(() => {
-        setNeighborhoodsList(neighborhoodsData.features.map(({ properties }) => ({ nome: properties.nome, codbairro: properties.codbairro })));
-    }, []);
 
     const filteredData = useMemo(() => {
         let currentData: any[] | BolsaFamilia[] | ExtremaPobreza[] | FaixaRenda[] | undefined;
@@ -215,7 +281,7 @@ export default function CECAD() {
     const pageDescription = useMemo(() => {
         switch (location.pathname) {
             case '/income':
-                return `Quantidade de famílias/pessoas em ${category.value}`;
+                return `Quantidade de famílias/pessoas em ${category.label}`;
             case '/poverty':
                 return `Quantidade de famílias/pessoas ${category.value == 'Sem registro' ? 'sem' : 'com'} CadUnico`;
             case '/bolsa_familia':
@@ -235,30 +301,30 @@ export default function CECAD() {
                                 <FiArrowUpCircle />
                                 <div>
                                     <strong>Máximo</strong>
-                                    <p>{cardsData[category.value].max_regiao}</p>
-                                    <p>{cardsData[category.value]?.maximo}</p>
+                                    <p>{cardsData?.max_regiao}</p>
+                                    <p>{cardsData?.maximo}</p>
                                 </div>
                             </Card>
                             <Card>
                                 <FiArrowDownCircle />
                                 <div>
                                     <strong>Mínimo</strong>
-                                    <p>{cardsData[category.value].min_regiao}</p>
-                                    <p>{cardsData[category.value]?.minimo}</p>
+                                    <p>{cardsData?.min_regiao}</p>
+                                    <p>{cardsData?.minimo}</p>
                                 </div>
                             </Card>
                             <Card>
                                 <FiBarChart2 />
                                 <div>
                                     <strong>Média</strong>
-                                    <p>{cardsData[category.value]?.media}</p>
+                                    <p>{cardsData?.media}</p>
                                 </div>
                             </Card>
                             <Card>
                                 <FiPlusCircle />
                                 <div>
                                     <strong>Total</strong>
-                                    <p>{cardsData[category.value]?.total}</p>
+                                    <p>{cardsData?.total}</p>
                                 </div>
                             </Card>
                         </Cards>
@@ -271,7 +337,7 @@ export default function CECAD() {
                         </Map>
                         <Chart>
                             <FiltersContainer>
-                                {mapType == 'neighborhood' && (
+                                { mapType == 'neighborhood' && (
                                     <Select className="react-select-container" classNamePrefix="react-select" isMulti 
                                         defaultValue={selectedNeighborhoods} options={[{ label: 'Todos', value: 'Todos' },
                                         ...neighborhoodsList.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
@@ -282,7 +348,7 @@ export default function CECAD() {
                                 <FilterPopover setFilters={setFilters as Dispatch<SetStateAction<FiltersType>>} filters={filters} page="QUANT" />
                             </FiltersContainer>
                             <ResponsiveContainer>
-                                {chart == 'BarChart' ? (
+                                { chart == 'BarChart' ? (
                                     <BarChart
                                         data={filteredData}
                                         margin={{

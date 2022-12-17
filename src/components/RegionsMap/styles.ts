@@ -24,7 +24,7 @@ export const Captions = styled('div', {
   display: 'flex',
   flexDirection: 'column',
 
-  padding: '1rem 2rem',
+  padding: '1.2rem',
   borderRadius: '10px',
 
   boxShadow: '0 2px 10px hsl(0 0% 9.0%)'
@@ -32,8 +32,9 @@ export const Captions = styled('div', {
 
 export const CaptionTitle = styled('div', {
   marginBottom: '1rem',
+  marginRight: '1.2rem',
   fontSize: '1.2rem',
-  textAlign: 'center'
+  textAlign: 'center',
 });
 
 export const CaptionList = styled('ul', {

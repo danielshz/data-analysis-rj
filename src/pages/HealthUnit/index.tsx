@@ -85,6 +85,28 @@ export default function HealthUnit() {
         const response = await api.get(`quantidade/unidade/${mapTypeToUrl[mapType]}`);
 
         setUnitsData(response.data);
+        const { min, max } = getMinMax(response.data);
+        setFilters({ max, min });
+    }
+
+    
+    function getMinMax(data: any) {
+        type Accumulator = {
+            min: number;
+            max: number;
+        };
+
+        const { min, max } = data.reduce((accumulator: Accumulator | null, currentValue: any) => {
+            if(accumulator != null) {
+                const value = currentValue.quantidade;
+                const { min, max } = accumulator;
+        
+                return { min: value < min ? value : min, max: value > max ? value : max };
+            } else
+                return { min: currentValue.quantidade, max: currentValue.quantidade };
+        }, null) as Accumulator;
+
+        return { min, max };
     }
 
     const regionData = useMemo(() => {

@@ -26,7 +26,7 @@ interface FilterPopoverProps {
 }
 
 export default function FilterPopover({ filters, setFilters, page }: FilterPopoverProps) {
-  const [max, setMax] = useState(filters != null ? filters.max : 1000);
+  const [max, setMax] = useState(filters != null ? filters.max : 100000);
   const [min, setMin] = useState(filters != null ? filters.min : 0);
   
   const [begin, setBegin] = useState(filters != null ? filters.begin : undefined);
@@ -44,7 +44,7 @@ export default function FilterPopover({ filters, setFilters, page }: FilterPopov
           <Text>
             Filtros
           </Text>
-          {page == 'QUANT' && (
+          { page == 'QUANT' && (
             <>
               <Fieldset>
                 <Label htmlFor="max">
@@ -61,7 +61,7 @@ export default function FilterPopover({ filters, setFilters, page }: FilterPopov
             </>
           )}
 
-          {page == 'DATE' && (
+          { page == 'DATE' && (
             <>
               <Fieldset>
                 <Label htmlFor="begin">
