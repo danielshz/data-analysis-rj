@@ -15,6 +15,7 @@ export const StyledLoader = styled('div', {
   position: 'relative',
   width: '4rem',
   height: '4rem',
+  marginTop: '2rem',
 
   div: {
     boxSizing: 'border-box',

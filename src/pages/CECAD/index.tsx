@@ -53,6 +53,9 @@ const bolsa_familia = [
     { label: 'Não possui', value: 'bolsa_familia_nao' },
 ];
 
+const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536'];
+const chartOptions = [{ label: 'BarChart', value: 'BarChart'}, { label: 'PieChart', value: 'PieChart' }];
+
 interface CardsData {
     maximo: number;
     minimo: number;
@@ -90,9 +93,6 @@ interface FaixaRenda {
 
 export default function CECAD() {
     const location = useLocation();
-
-    const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536'];
-    const chartOptions = [{ label: 'BarChart', value: 'BarChart'}, { label: 'PieChart', value: 'PieChart' }];
 
     const [filters, setFilters] = useState<FiltersType | null>(null);
 
@@ -151,11 +151,14 @@ export default function CECAD() {
         }
 
         if(currentData.length > 0) {
-            const { min, max } = getMinMax(currentData);
-            setFilters({ max, min });
-        }
+            const hasCategory = Object.keys(currentData[0]).some(key => key == category.value);
 
-    }, [location.pathname, category, incomeData, povertyData, bolsaFamiliaData]);
+            if(hasCategory) {
+                const { min, max } = getMinMax(currentData);
+                setFilters({ max, min });
+            }
+        }
+    }, [location.pathname, cardsData, category, incomeData, povertyData, bolsaFamiliaData]);
 
     useEffect(() => {
         async function getData() {
@@ -170,18 +173,18 @@ export default function CECAD() {
         if(category && category.label != '')
             getData();
     }, [location.pathname, mapType, category]);
-    
 
     async function getCardsData() {
         const pathname = location.pathname as '/income' | '/poverty' | '/bolsa_familia';
-
         let response;
 
-        if(pathname == '/income') {
+        if(pathname == '/income' && incomeURL[category.label]) {
             response = await api.get(`quantidade/${incomeURL[category.label]}/${mapTypeToUrl[mapType]}/metrica`);
-
             setCardsData(response.data);
-        } else {
+        }
+        else if(pathnameToUrl[pathname] == undefined || pathnameToUrl[pathname] == 'faixa-renda')
+            return null;
+        else {
             response = await api.get(`quantidade/${pathnameToUrl[pathname]}/${mapTypeToUrl[mapType]}/metrica`);
             setCardsData(response.data[category.value]);
         }
@@ -189,11 +192,17 @@ export default function CECAD() {
 
     async function getMainData() {
         const pathname = location.pathname as '/income' | '/poverty' | '/bolsa_familia';
-
+        
         let response;
 
-        if(pathname == '/income')
+        if(pathname == '/income') {
+            if(incomeURL[category.label] == undefined)
+                return null;
+                
             response = await api.get(`quantidade/${incomeURL[category.label]}/${mapTypeToUrl[mapType]}`);
+        }
+        else if(pathnameToUrl[pathname] == undefined || pathnameToUrl[pathname] == 'faixa-renda')
+            return null;
         else
             response = await api.get(`quantidade/${pathnameToUrl[pathname]}/${mapTypeToUrl[mapType]}`);
 
@@ -209,8 +218,14 @@ export default function CECAD() {
                 break;
         }
 
-        const { min, max } = getMinMax(response.data);
-        setFilters({ max, min });
+        if(response.data.length > 0) {
+            const hasCategory = Object.keys(response.data[0]).some(key => key == category.value);
+    
+            if(hasCategory) {
+                const { min, max } = getMinMax(response.data);
+                setFilters({ max, min });
+            }
+        }
     }
 
     function getMinMax(data: any) {
@@ -293,7 +308,7 @@ export default function CECAD() {
         <Container>
             <NavBar />
             <Content>
-                { loader || !regionData || regionData.length == 0 ? <Loader /> : (
+                {loader || !regionData || regionData.length == 0 ? <Loader /> : (
                     <>
                         <h1>{pageDescription}</h1>
                         <Cards>
@@ -337,7 +352,7 @@ export default function CECAD() {
                         </Map>
                         <Chart>
                             <FiltersContainer>
-                                { mapType == 'neighborhood' && (
+                                {mapType == 'neighborhood' && (
                                     <Select className="react-select-container" classNamePrefix="react-select" isMulti 
                                         defaultValue={selectedNeighborhoods} options={[{ label: 'Todos', value: 'Todos' },
                                         ...neighborhoodsList.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
@@ -348,7 +363,7 @@ export default function CECAD() {
                                 <FilterPopover setFilters={setFilters as Dispatch<SetStateAction<FiltersType>>} filters={filters} page="QUANT" />
                             </FiltersContainer>
                             <ResponsiveContainer>
-                                { chart == 'BarChart' ? (
+                                {chart == 'BarChart' ? (
                                     <BarChart
                                         data={filteredData}
                                         margin={{

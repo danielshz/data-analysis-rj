@@ -7,7 +7,6 @@ import RegionsMap, { MapType, regionOptions, RegionsData } from '../../component
 import NavBar from '../../components/NavBar';
 import ToggleGroup from '../../components/ToggleGroup';
 import FilterPopover, { FiltersType } from '../../components/FilterPopover';
-import SelectSingle, { Option } from '../../components/SelectSingle';
 import Loader from '../../components/Loader';
 
 import { Container, Content, Map, Cards, Card, Chart, FiltersContainer } from './styles';
@@ -21,6 +20,9 @@ const mapTypeToUrl = {
     ra: 'regiaoadministrativa',
     rp: 'regiaoplanejamento',
 };
+
+const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536'];
+const chartOptions = [{ label: 'BarChart', value: 'BarChart'}, { label: 'PieChart', value: 'PieChart' }];
 
 interface CardsData {
     maximo: number;
@@ -37,9 +39,6 @@ interface UnidadeDeSaude {
 }
 
 export default function HealthUnit() {
-    const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536'];
-    const chartOptions = [{ label: 'BarChart', value: 'BarChart'}, { label: 'PieChart', value: 'PieChart' }];
-
     const [filters, setFilters] = useState<FiltersType | null>(null);
 
     const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<MultiValue<{
@@ -47,7 +46,6 @@ export default function HealthUnit() {
         value: string;
     }>>([{ label: 'Todos', value: 'Todos' }]);
 
-    const [category, setCategory] = useState<Option>({ label: '', value: '' });
     const [chart, setChart] = useState<string>('BarChart');
     const [mapType, setMapType] = useState<MapType>('neighborhood');
 
@@ -73,7 +71,7 @@ export default function HealthUnit() {
         }
 
         getData();
-    }, [location.pathname, mapType]);
+    }, [mapType]);
 
     async function getCardsData() {
         const response = await api.get(`quantidade/unidade/${mapTypeToUrl[mapType]}/metrica`);
@@ -85,10 +83,10 @@ export default function HealthUnit() {
         const response = await api.get(`quantidade/unidade/${mapTypeToUrl[mapType]}`);
 
         setUnitsData(response.data);
+        
         const { min, max } = getMinMax(response.data);
         setFilters({ max, min });
     }
-
     
     function getMinMax(data: any) {
         type Accumulator = {
@@ -111,7 +109,7 @@ export default function HealthUnit() {
 
     const regionData = useMemo(() => {
         return unitsData.map(({ quantidade, nome }) => ({ value: quantidade, nome }));
-    }, [location.pathname, mapType, category, unitsData]);
+    }, [mapType, unitsData]);
 
     const filteredData = useMemo(() => {
         let currentData = unitsData;

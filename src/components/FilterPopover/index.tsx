@@ -29,11 +29,11 @@ export default function FilterPopover({ filters, setFilters, page }: FilterPopov
   const [max, setMax] = useState(filters != null ? filters.max : 100000);
   const [min, setMin] = useState(filters != null ? filters.min : 0);
   
-  const [begin, setBegin] = useState(filters != null ? filters.begin : undefined);
-  const [end, setEnd] = useState(filters != null ? filters.end : undefined);
+  const [begin, setBegin] = useState(filters != null ? filters.begin : '2020-01-01');
+  const [end, setEnd] = useState(filters != null ? filters.end : '2020-12-31');
 
   return (
-    <StyledPopoverRoot>
+    <StyledPopoverRoot modal>
       <Popover.Trigger asChild>
         <IconButton>
           <MixerHorizontalIcon />
@@ -44,7 +44,7 @@ export default function FilterPopover({ filters, setFilters, page }: FilterPopov
           <Text>
             Filtros
           </Text>
-          { page == 'QUANT' && (
+          {page == 'QUANT' && (
             <>
               <Fieldset>
                 <Label htmlFor="max">
@@ -61,19 +61,19 @@ export default function FilterPopover({ filters, setFilters, page }: FilterPopov
             </>
           )}
 
-          { page == 'DATE' && (
+          {page == 'DATE' && (
             <>
               <Fieldset>
                 <Label htmlFor="begin">
                   Início
                 </Label>
-                <Input id="begin" type="date" onChange={(e) => setBegin(e.target.value as unknown as Date)} />
+                <Input id="begin" type="date" value={begin} onChange={(e) => setBegin(e.target.value as unknown as Date)} />
               </Fieldset>
               <Fieldset>
                 <Label htmlFor="end">
                   Fim
                 </Label>
-                <Input id="end" type="date" onChange={(e) => setEnd(e.target.value as unknown as Date)} />
+                <Input id="end" type="date" value={end} onChange={(e) => setEnd(e.target.value as unknown as Date)} />
               </Fieldset>
             </>
           )}

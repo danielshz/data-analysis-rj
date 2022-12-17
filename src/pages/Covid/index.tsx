@@ -7,12 +7,12 @@ import NavBar from '../../components/NavBar';
 import ToggleGroup from '../../components/ToggleGroup';
 import FilterPopover, { FiltersType } from '../../components/FilterPopover';
 import SelectSingle, { Option } from '../../components/SelectSingle';
+import Loader from '../../components/Loader';
 
 import Select, { MultiValue } from 'react-select';
 
 import { Container, Content, Map, Cards, Card, Chart, FiltersContainer } from './styles';
 import api from '../../services/api';
-import Loader from '../../components/Loader';
 
 import neighborhoodsData from '../../utils/Limite_de_Bairros.json';
 
@@ -35,6 +35,9 @@ const timelineEvolution = {
     recuperados: 2,
 };
 
+const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536'];
+const chartOptions = [{ label: 'BarChart', value: 'BarChart'}, { label: 'PieChart', value: 'PieChart' }];
+
 interface CardsData {
     maximo: number;
     minimo: number;
@@ -55,10 +58,8 @@ interface TimelineData {
 }
 
 export default function Covid() {
-    const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536'];
-    const chartOptions = [{ label: 'BarChart', value: 'BarChart'}, { label: 'PieChart', value: 'PieChart' }];
-
     const [filters, setFilters] = useState<FiltersType | null>(null);
+    const [timelineFilters, setTimelineFilters] = useState<FiltersType | null>(null);
 
     const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<MultiValue<{
         label: string;
@@ -77,6 +78,8 @@ export default function Covid() {
     const [timelineData, setTimelineData] = useState<TimelineData[]>([]);
 
     const [loader, setLoader] = useState(true);
+    const [timelineLoader, setTimelineLoader] = useState(false);
+
     const [neighborhoodsList, setNeighborhoodsList] = useState<{ nome: string; codbairro: string; }[]>([]);
 
     useEffect(() => {
@@ -90,19 +93,31 @@ export default function Covid() {
 
     useEffect(() => {
         async function getData() {
+            setTimelineLoader(true);
+
+            await getTimelineData();
+            
+            setTimelineLoader(false);
+        }
+
+        if(timelineCategory && timelineCategory.label != '' && timelineFilters)
+            getData();
+    }, [timelineCategory, timelineFilters]);
+
+    useEffect(() => {
+        async function getData() {
             setLoader(true);
 
             await getCardsData();
             await getMainData();
-            // await getTimelineData();
+            await getTimelineData();
             
             setLoader(false);
         }
 
         if(category && category.label != '' && timelineCategory && timelineCategory.label != '')
             getData();
-    }, [location.pathname, mapType, category]);
-    
+    }, [mapType, category]);
 
     async function getCardsData() {
         let response;
@@ -124,28 +139,26 @@ export default function Covid() {
             response = await api.get(`quantidade/covid/${category.value}/${mapTypeToUrl[mapType]}`);
 
         setQuantityData(response.data);
-
+        
         const { min, max } = getMinMax(response.data);
         setFilters({ max, min });
     }
 
     async function getTimelineData() {
+        const begin = formatDate(timelineFilters?.begin);
+        const end = formatDate(timelineFilters?.end);
+
         const data = {
-            inicio: '01-01-20',
-            fim: '31-12-20',
+            inicio: begin ? begin : '01-01-20',
+            fim: end ? end : '31-12-20',
             evolucao: timelineEvolution[timelineCategory.value]
         };
-
-        console.log(data);
 
         const response = await api.get('quantidade/covid/timeline/filtro', {
             params: data
         });
 
         setTimelineData(response.data);
-
-        const { min, max } = getMinMax(response.data);
-        setFilters({ max, min });
     }
 
     function getMinMax(data: any) {
@@ -167,9 +180,18 @@ export default function Covid() {
         return { min, max };
     }
 
+    function formatDate(date: string) {
+        if(!date)
+            return null;
+        
+        const [year, month, day] = date.split('-');
+
+        return `${day}-${month}-${year.slice(2, 4)}`;
+    }
+
     const regionData = useMemo(() => {
         return quantityData.map(({ quantidade, nome }) => ({ value: quantidade, nome }));
-    }, [location.pathname, mapType, category, quantityData]);
+    }, [mapType, category, quantityData]);
 
     const filteredData = useMemo(() => {
         let currentData = quantityData;
@@ -194,7 +216,7 @@ export default function Covid() {
         <Container>
             <NavBar />
             <Content>
-                { loader || !regionData || regionData.length == 0 ? <Loader /> : (
+                {loader || !regionData || regionData.length == 0 ? <Loader /> : (
                     <>
                         <h1>Quantidade de {category.value.toLowerCase()}</h1>
                         <Cards>
@@ -238,7 +260,7 @@ export default function Covid() {
                         </Map>
                         <Chart>
                             <FiltersContainer>
-                                { mapType == 'neighborhood' && (
+                                {mapType == 'neighborhood' && (
                                     <Select className="react-select-container" classNamePrefix="react-select" isMulti 
                                         defaultValue={selectedNeighborhoods} options={[{ label: 'Todos', value: 'Todos' },
                                         ...neighborhoodsList.map(({ nome, codbairro }) => ({ label: nome, value: codbairro }))]}
@@ -249,7 +271,7 @@ export default function Covid() {
                                 <FilterPopover setFilters={setFilters as Dispatch<SetStateAction<FiltersType>>} filters={filters} page="QUANT" />
                             </FiltersContainer>
                             <ResponsiveContainer>
-                                { chart == 'BarChart' ? (
+                                {chart == 'BarChart' ? (
                                     <BarChart
                                         data={filteredData}
                                         margin={{
@@ -283,27 +305,31 @@ export default function Covid() {
                         </Chart>
                         <Chart>
                             <FiltersContainer>
-                                <SelectSingle value={category as Option} setValue={setCategory} options={dataCategory.slice(0, dataCategory.length - 1)} />
-                                <FilterPopover setFilters={setFilters as Dispatch<SetStateAction<FiltersType>>} filters={filters} page="DATE" />
+                                <SelectSingle value={timelineCategory as Option} setValue={setTimelineCategory} options={dataCategory.slice(0, dataCategory.length - 1)} />
+                                <FilterPopover setFilters={setTimelineFilters as Dispatch<SetStateAction<FiltersType>>} filters={timelineFilters} page="DATE" />
                             </FiltersContainer>
-                            <ResponsiveContainer>
-                                <LineChart
-                                    data={timelineData}
-                                    margin={{
-                                        top: 5,
-                                        right: 30,
-                                        left: 20,
-                                        bottom: 5,
-                                    }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Line type="monotone" dataKey={timelineCategory.label} stroke="#8884d8" activeDot={{ r: 8 }} />
-                                </LineChart>
-                            </ResponsiveContainer>
+                            {timelineLoader ? <Loader /> : (
+                                <ResponsiveContainer>
+                                    <LineChart
+                                        data={timelineData.map(
+                                            ({ quantidade, data }) => ({ data: data.replaceAll('-', '/'), [timelineCategory.label]: quantidade })
+                                        )}
+                                        margin={{
+                                            top: 5,
+                                            right: 30,
+                                            left: 20,
+                                            bottom: 5,
+                                        }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="data" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Line type="monotone" dot={false} dataKey={timelineCategory.label} stroke="#24222F" activeDot={{ r: 8 }} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            )}   
                         </Chart>
                     </>
                 )}
