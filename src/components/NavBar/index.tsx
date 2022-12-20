@@ -8,7 +8,7 @@ export default function NavBar() {
   const routes = [
     { name: 'Unidades de saúde', path: '/' },
     { name: 'Faixa de renda', path: '/income' },
-    { name: 'Extrema pobreza', path: '/poverty' },
+    { name: 'CadÚnico', path: '/poverty' },
     { name: 'Bolsa família', path: '/bolsa_familia' },
     { name: 'Covid-19', path: '/covid' },
   ];
