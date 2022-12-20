@@ -25,7 +25,7 @@ interface SelectSingle {
 export default function SelectSingle({ options, value, setValue }: SelectSingle){
   return (
     <Select.Root defaultValue={value.value} value={value.value} 
-      onValueChange={(value) => setValue({ value, label: options.find(option => option.value === value).label })}
+      onValueChange={(value) => setValue({ value, label: options.find(option => option.value === value)?.label as string })}
     >
       <SelectTrigger>
         <Select.Value />

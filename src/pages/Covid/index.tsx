@@ -145,13 +145,13 @@ export default function Covid() {
     }
 
     async function getTimelineData() {
-        const begin = formatDate(timelineFilters?.begin);
-        const end = formatDate(timelineFilters?.end);
+        const begin = formatDate(timelineFilters?.begin as string);
+        const end = formatDate(timelineFilters?.end as string);
 
         const data = {
             inicio: begin ? begin : '01-01-20',
             fim: end ? end : '31-12-20',
-            evolucao: timelineEvolution[timelineCategory.value]
+            evolucao: timelineEvolution[timelineCategory.value as 'casos' | 'mortos' | 'recuperados']
         };
 
         const response = await api.get('quantidade/covid/timeline/filtro', {

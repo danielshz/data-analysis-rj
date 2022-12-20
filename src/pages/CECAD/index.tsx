@@ -56,6 +56,12 @@ const bolsa_familia = [
 const captionColors = ['#D83535','#D95F36','#D97D36','#D9A536'];
 const chartOptions = [{ label: 'BarChart', value: 'BarChart'}, { label: 'PieChart', value: 'PieChart' }];
 
+type CategoryLabel = 'Extrema Pobreza' | 'Pobreza' | 'Baixa Renda' | 'Acima de 1/2 S.M.';
+
+type FaixaRendaKeys = 'faixa_renda_extrema_pobreza' | 'faixa_renda_pobreza' | 'faixa_renda_baixa_renda' | 'faixa_renda_acima_1_5';
+type ExtremaPobrezaKeys = 'extrema_pobreza_cadastrado' | 'extrema_pobreza_sem_registro';
+type BolsaFamiliaKeys = 'bolsa_familia_sim' | 'bolsa_familia_nao';
+
 interface CardsData {
     maximo: number;
     minimo: number;
@@ -178,8 +184,8 @@ export default function CECAD() {
         const pathname = location.pathname as '/income' | '/poverty' | '/bolsa_familia';
         let response;
 
-        if(pathname == '/income' && incomeURL[category.label]) {
-            response = await api.get(`quantidade/${incomeURL[category.label]}/${mapTypeToUrl[mapType]}/metrica`);
+        if(pathname == '/income' && incomeURL[category.label as CategoryLabel]) {
+            response = await api.get(`quantidade/${incomeURL[category.label as CategoryLabel]}/${mapTypeToUrl[mapType]}/metrica`);
             setCardsData(response.data);
         }
         else if(pathnameToUrl[pathname] == undefined || pathnameToUrl[pathname] == 'faixa-renda')
@@ -196,10 +202,10 @@ export default function CECAD() {
         let response;
 
         if(pathname == '/income') {
-            if(incomeURL[category.label] == undefined)
+            if(incomeURL[category.label as CategoryLabel] == undefined)
                 return null;
                 
-            response = await api.get(`quantidade/${incomeURL[category.label]}/${mapTypeToUrl[mapType]}`);
+            response = await api.get(`quantidade/${incomeURL[category.label as CategoryLabel]}/${mapTypeToUrl[mapType]}`);
         }
         else if(pathnameToUrl[pathname] == undefined || pathnameToUrl[pathname] == 'faixa-renda')
             return null;
@@ -251,11 +257,11 @@ export default function CECAD() {
         if((incomeData || povertyData || bolsaFamiliaData) && category.value != '') {
             switch (location.pathname) {
                 case '/income':
-                    return incomeData.map(data => ({ value: data[category.value], nome: data.nome }));
+                    return incomeData.map(data => ({ value: data[category.value as FaixaRendaKeys], nome: data.nome }));
                 case '/poverty':
-                    return povertyData.map(data => ({ value: data[category.value], nome: data.nome }));
+                    return povertyData.map(data => ({ value: data[category.value as ExtremaPobrezaKeys], nome: data.nome }));
                 case '/bolsa_familia':
-                    return bolsaFamiliaData.map(data => ({ value: data[category.value], nome: data.nome }));
+                    return bolsaFamiliaData.map(data => ({ value: data[category.value as BolsaFamiliaKeys], nome: data.nome }));
             }
         }
 

@@ -13,8 +13,8 @@ import {
 export interface FiltersType {
   max?: number;
   min?: number;
-  begin?: Date;
-  end?: Date;
+  begin?: Date | string;
+  end?: Date | string;
 };
 
 export type FiltersPage = 'QUANT' | 'DATE';
@@ -67,13 +67,13 @@ export default function FilterPopover({ filters, setFilters, page }: FilterPopov
                 <Label htmlFor="begin">
                   Início
                 </Label>
-                <Input id="begin" type="date" value={begin} onChange={(e) => setBegin(e.target.value as unknown as Date)} />
+                <Input id="begin" type="date" value={begin as string} onChange={(e) => setBegin(e.target.value as unknown as Date)} />
               </Fieldset>
               <Fieldset>
                 <Label htmlFor="end">
                   Fim
                 </Label>
-                <Input id="end" type="date" value={end} onChange={(e) => setEnd(e.target.value as unknown as Date)} />
+                <Input id="end" type="date" value={end as string} onChange={(e) => setEnd(e.target.value as unknown as Date)} />
               </Fieldset>
             </>
           )}
