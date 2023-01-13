@@ -58,6 +58,6 @@ Para executar o projeto você precisará ter instaladas as seguintes ferramentas
 ## 🗂 Outros repositórios do projeto <a name="others"></a>
 
 1. [Backend](https://github.com/amaral220x/covid-backend)
-2. [Extração e tratamento de dados](https://github.com/amaral220x/covid-backend)
+2. [Extração e tratamento de dados](https://github.com/LucasdeLyra/covid-database)
 
 <p align="right"><a href="#top">Voltar ao topo</a></p>
