@@ -7,6 +7,7 @@
 * [Pré-requisitos](#install)
 * [Configuração](#setup)
 * [Execução](#exe)
+* [Outros repositórios do projeto](#others)
 
 ## 💻 Sobre o projeto <a name="about"></a>
 
@@ -51,5 +52,12 @@ Para executar o projeto você precisará ter instaladas as seguintes ferramentas
    ```bash
    npm run dev
    ```
+
+<p align="right"><a href="#top">Voltar ao topo</a></p>
+
+## 🗂 Outros repositórios do projeto <a name="others"></a>
+
+1. [Backend](https://github.com/amaral220x/covid-backend)
+2. [Extração e tratamento de dados](https://github.com/amaral220x/covid-backend)
 
 <p align="right"><a href="#top">Voltar ao topo</a></p>
